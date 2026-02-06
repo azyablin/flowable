@@ -18,10 +18,10 @@ spring:
 
 
   datasource:
-    url: jdbc:oracle:thin:@//localhost:1521/XE
+    url: jdbc:postgresql://localhost:5432/flowable
     username: flowable
     password: flowable
-    driver-class-name: oracle.jdbc.OracleDriver
+    driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 50
       minimum-idle: 5

@@ -24,7 +24,7 @@ dependencies {
     // Spring Boot
     implementation('org.springframework.boot:spring-boot-starter-web');
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
+    implementation 'com.oracle.database.jdbc:ojdbc11:23.2.0.0'
     // Flowable
     implementation "org.flowable:flowable-spring-boot-starter-process:${flowableVersion}"
     implementation "org.flowable:flowable-spring-boot-starter-process-rest:${flowableVersion}"
@@ -34,6 +34,8 @@ dependencies {
     implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0') {
         exclude group: "io.swagger.core.v3", module: "swagger-annotations"
     }
+
+  //  implementation 'org.liquibase:liquibase-core'
 
     compileOnly 'org.springframework.boot:spring-boot-starter-tomcat'
 

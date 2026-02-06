@@ -28,4 +28,9 @@ public class TestController {
         return "lock released by thread " + Thread.currentThread().getId();
     }
 
+    @GetMapping("/lock-count")
+    public Long getLockCount() {
+        return hazelcastService.getLockCount();
+    }
+
 }

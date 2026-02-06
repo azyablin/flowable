@@ -29,7 +29,7 @@ public class SchedulerService {
 
     private final AtomicBoolean started = new AtomicBoolean();
 
-    @Value("${server.port:8095}")
+    @Value("${server.port}")
     private int serverPort;
 
     @Scheduled(fixedDelay = 10000)
