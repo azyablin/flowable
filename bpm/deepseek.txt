@@ -1,0 +1,19 @@
+нужно использовать java flowable bpm
+необходимо сделать gradle проект и упакеовать в zip
+
+ Имеется список товаров, необходимо для каждого товара вызвать   JavaDelegate под названием processAction  в котором есть  метод, используя для каждого товара subprocess. 
+ JavaDelegate может возвращать три значения: WAIT, NEXT, FINISH;
+ Если возвращается WAIT, то нужно дождаться ответа от другого Java класса, который выполняется через 5 секунд после вызова JavaDelegate.
+Если возвращается NEXT, то нужно вызвать JavaDelegate nextAction и выйти из подпроцесса.
+Если возвращается FINISH, то нужно вызвать JavaDelegate finishAction и выйти из подпроцесса.
+После выхода из подпроцесса товар удаляется из списка.
+
+<intermediateCatchEvent id="waitForResponse">
+        <timerEventDefinition>
+          <timeDuration>PT5S</timeDuration>
+        </timerEventDefinition>
+      </intermediateCatchEvent> 
+ заменить на ожидание без таймера и написать класс, который вызывает это событие
+	  
+	  
+упакуй всё что выше в zip

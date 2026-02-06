@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:flowable="http://flowable.org/bpmn"
+             targetNamespace="http://example.com/process">
+
+    <process id="asyncProductProcessing" name="Async Product Processing" isExecutable="true">
+
+        <startEvent id="startEvent">
+            <extensionElements>
+                <flowable:formProperty id="products" name="Products Array" type="string" />
+                <flowable:formProperty id="callbackUrl" name="Callback URL" type="string" />
+            </extensionElements>
+        </startEvent>
+
+        <sequenceFlow id="flow1" sourceRef="startEvent" targetRef="initializeProcess" />
+
+        <!-- Инициализация процесса -->
+        <serviceTask id="initializeProcess" name="Initialize Process Data"
+                     flowable:class="com.example.InitializeProcessDelegate" />
+
+        <sequenceFlow id="flow2" sourceRef="initializeProcess" targetRef="checkProductsEmpty" />
+
+        <!-- Проверка на пустой массив -->
+        <exclusiveGateway id="checkProductsEmpty" />
+
+        <sequenceFlow id="flow3" sourceRef="checkProductsEmpty" targetRef="processProducts">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${!empty remainingProducts}
+            </conditionExpression>
+        </sequenceFlow>
+
+        <sequenceFlow id="flow4" sourceRef="checkProductsEmpty" targetRef="allProductsProcessed">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${empty remainingProducts}
+            </conditionExpression>
+        </sequenceFlow>
+
+        <!-- Multi-instance для параллельной обработки -->
+        <serviceTask id="processProducts" name="Send Product to REST API"
+                     flowable:class="com.example.SendToRestApiDelegate">
+
+            <multiInstanceLoopCharacteristics 
+                flowable:collection="${remainingProducts}" 
+                flowable:elementVariable="product"
+                flowable:parallelMultiInstance="true">
+
+                <completionCondition>
+                    ${nrOfCompletedInstances == nrOfInstances}
+                </completionCondition>
+            </multiInstanceLoopCharacteristics>
+        </serviceTask>
+
+        <sequenceFlow id="flow5" sourceRef="processProducts" targetRef="waitForResponses" />
+
+        <!-- Ожидание ответов через Receive Task -->
+        <receiveTask id="waitForResponses" name="Wait for REST Responses">
+            <extensionElements>
+                <flowable:eventType>rest-response-received</flowable:eventType>
+            </extensionElements>
+        </receiveTask>
+
+        <sequenceFlow id="flow6" sourceRef="waitForResponses" targetRef="checkAllProcessed" />
+
+        <!-- Проверка все ли товары обработаны -->
+        <exclusiveGateway id="checkAllProcessed" />
+
+        <sequenceFlow id="flow7" sourceRef="checkAllProcessed" targetRef="processProducts">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${!empty remainingProducts}
+            </conditionExpression>
+        </sequenceFlow>
+
+        <sequenceFlow id="flow8" sourceRef="checkAllProcessed" targetRef="finalizeProcessing">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${empty remainingProducts}
+            </conditionExpression>
+        </sequenceFlow>
+
+        <!-- Финальная обработка -->
+        <serviceTask id="finalizeProcessing" name="Finalize Processing"
+                     flowable:class="com.example.FinalizeProcessingDelegate" />
+
+        <sequenceFlow id="flow9" sourceRef="finalizeProcessing" targetRef="endEvent" />
+
+        <endEvent id="endEvent" />
+
+    </process>
+
+</definitions>

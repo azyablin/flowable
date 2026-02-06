@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: flowable-demo
+  liquibase:
+    enabled: false
+  cache:
+    type: hazelcast
+    cache-names: users,products,orders
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flowable
+    username: flowable
+    password: flowable
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 5
+      connection-timeout: 5000
+      idle-timeout: 30000
+      max-lifetime: 120000
+
+
+
+
+  security:
+    user:
+      name: admin
+      password: admin
+      roles: ADMIN,USER
+
+flowable:
+  rest-api-enabled: true
+  # Основная конфигурация
+  async-executor-activate: true
+  database-schema-update: true
+  history-level: none
+  process:
+    async:
+      executor:
+        global-acquire-lock-enabled: true
+
+
+
+
+
+
+
+server:
+  port: {server.port:8095}
+  servlet:
+    context-path: /
+
+
+
+logging:
+  level:
+    org.flowable.engine: INFO
+
+springdoc:
+  swagger-ui:
+    doc-expansion: none
+    default-models-expand-depth: -1

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://example.com/process" exporter="Flowable Open Source Modeler" exporterVersion="6.8.0">
+  <signal id="asyncResponseSignal" name="ASYNC_RESPONSE_SIGNAL" flowable:scope="global"></signal>
+  <process id="product_processing" name="Обработка товаров с условиями" isExecutable="true">
+    <startEvent id="start" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:formProperty id="products" name="Список товаров" type="json"></flowable:formProperty>
+      </extensionElements>
+    </startEvent>
+    <subProcess id="processProductSubprocess" name="subProcess" flowable:async="true">
+      <multiInstanceLoopCharacteristics isSequential="false" flowable:collection="products" flowable:elementVariable="product">
+        <extensionElements></extensionElements>
+        <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+      <startEvent id="subProcessStart" flowable:formFieldValidation="true"></startEvent>
+      <serviceTask id="processActionTask" flowable:delegateExpression="${processAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <exclusiveGateway id="decisionGateway"></exclusiveGateway>
+      <intermediateCatchEvent id="waitForResponse" name="Wait for Async Response">
+        <signalEventDefinition signalRef="asyncResponseSignal"></signalEventDefinition>
+      </intermediateCatchEvent>
+      <serviceTask id="asyncResponseHandler" flowable:delegateExpression="${asyncResponseHandler}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <serviceTask id="nextActionTask" flowable:delegateExpression="${nextAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <serviceTask id="finishActionTask" flowable:delegateExpression="${finishAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <endEvent id="subProcessEnd"></endEvent>
+      <sequenceFlow id="flow1" sourceRef="subProcessStart" targetRef="processActionTask"></sequenceFlow>
+      <sequenceFlow id="flow2" sourceRef="processActionTask" targetRef="decisionGateway"></sequenceFlow>
+      <sequenceFlow id="flow3" sourceRef="waitForResponse" targetRef="asyncResponseHandler"></sequenceFlow>
+      <sequenceFlow id="flow4" sourceRef="asyncResponseHandler" targetRef="subProcessEnd"></sequenceFlow>
+      <sequenceFlow id="flow5" sourceRef="nextActionTask" targetRef="subProcessEnd"></sequenceFlow>
+      <sequenceFlow id="flow6" sourceRef="finishActionTask" targetRef="subProcessEnd"></sequenceFlow>
+      <sequenceFlow id="toFinish" sourceRef="decisionGateway" targetRef="finishActionTask">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${actionResult == 'FINISH'}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="toNext" sourceRef="decisionGateway" targetRef="nextActionTask">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${actionResult == 'NEXT'}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="toWait" sourceRef="decisionGateway" targetRef="waitForResponse">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${actionResult == 'WAIT'}]]></conditionExpression>
+      </sequenceFlow>
+    </subProcess>
+    <serviceTask id="cleanupProducts" flowable:delegateExpression="${productCleanup}">
+      <extensionElements>
+        <flowable:field name="products">
+          <flowable:expression><![CDATA[${products}]]></flowable:expression>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="end"></endEvent>
+    <sequenceFlow id="flow7" sourceRef="start" targetRef="processProductSubprocess"></sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="processProductSubprocess" targetRef="cleanupProducts"></sequenceFlow>
+    <sequenceFlow id="flow9" sourceRef="cleanupProducts" targetRef="end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_product_processing">
+    <bpmndi:BPMNPlane bpmnElement="product_processing" id="BPMNPlane_product_processing">
+      <bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="0.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="processProductSubprocess" id="BPMNShape_processProductSubprocess">
+        <omgdc:Bounds height="390.0" width="690.0" x="74.99999776482589" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="subProcessStart" id="BPMNShape_subProcessStart">
+        <omgdc:Bounds height="30.0" width="30.0" x="94.99999776482589" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="processActionTask" id="BPMNShape_processActionTask">
+        <omgdc:Bounds height="60.0" width="100.00000000000001" x="174.99999776482588" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="decisionGateway" id="BPMNShape_decisionGateway">
+        <omgdc:Bounds height="40.0" width="40.000000000000014" x="324.9999977648259" y="175.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="waitForResponse" id="BPMNShape_waitForResponse">
+        <omgdc:Bounds height="30.0" width="30.000000000000014" x="449.9999865889553" y="179.99999463558214"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="asyncResponseHandler" id="BPMNShape_asyncResponseHandler">
+        <omgdc:Bounds height="60.0" width="99.99999999999996" x="584.999982565642" y="59.999998211860714"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="nextActionTask" id="BPMNShape_nextActionTask">
+        <omgdc:Bounds height="60.0" width="100.00000000000001" x="414.9999977648259" y="310.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="finishActionTask" id="BPMNShape_finishActionTask">
+        <omgdc:Bounds height="60.0" width="100.00000000000001" x="414.9999977648259" y="20.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="subProcessEnd" id="BPMNShape_subProcessEnd">
+        <omgdc:Bounds height="28.0" width="27.999999999999957" x="714.9999977648259" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cleanupProducts" id="BPMNShape_cleanupProducts">
+        <omgdc:Bounds height="60.0" width="100.0" x="820.0" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="970.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="30.0">
+        <omgdi:waypoint x="124.94999638318131" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="174.99999776482588" y="195.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2" flowable:sourceDockerX="50.0" flowable:sourceDockerY="30.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="274.9499977648259" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="324.9999977648259" y="195.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="toFinish" id="BPMNEdge_toFinish" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="30.0">
+        <omgdi:waypoint x="364.9231109739929" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="382.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="382.0" y="50.0"></omgdi:waypoint>
+        <omgdi:waypoint x="414.9999977648259" y="50.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="30.0">
+        <omgdi:waypoint x="464.9999865889553" y="179.99999463558214"></omgdi:waypoint>
+        <omgdi:waypoint x="464.9999865889553" y="149.99999910593036"></omgdi:waypoint>
+        <omgdi:waypoint x="634.999982565642" y="149.99999910593036"></omgdi:waypoint>
+        <omgdi:waypoint x="634.999982565642" y="119.9499982118607"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4" flowable:sourceDockerX="50.0" flowable:sourceDockerY="30.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="684.949982565621" y="89.99999821186071"></omgdi:waypoint>
+        <omgdi:waypoint x="728.9999977648259" y="89.99999821186071"></omgdi:waypoint>
+        <omgdi:waypoint x="728.9999977648259" y="180.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5" flowable:sourceDockerX="50.0" flowable:sourceDockerY="30.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="514.9499977647787" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="532.0" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="532.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="715.0001714862028" y="194.0708115020098"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="toWait" id="BPMNEdge_toWait" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="364.9416930760896" y="194.99999910593027"></omgdi:waypoint>
+        <omgdi:waypoint x="449.9999865889553" y="194.99999530389925"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6" flowable:sourceDockerX="50.0" flowable:sourceDockerY="30.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="514.9499977648215" y="50.0"></omgdi:waypoint>
+        <omgdi:waypoint x="532.0" y="50.0"></omgdi:waypoint>
+        <omgdi:waypoint x="532.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="715.0001714862028" y="194.0708115020098"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="345.0" flowable:targetDockerY="195.0">
+        <omgdi:waypoint x="29.949999888530044" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="74.99999776482589" y="195.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8" flowable:sourceDockerX="345.0" flowable:sourceDockerY="195.0" flowable:targetDockerX="50.0" flowable:targetDockerY="30.0">
+        <omgdi:waypoint x="764.9499977648259" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="820.0" y="195.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9" flowable:sourceDockerX="50.0" flowable:sourceDockerY="30.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="919.9499999999977" y="194.56140350877195"></omgdi:waypoint>
+        <omgdi:waypoint x="970.0005248012809" y="194.1223639291296"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="toNext" id="BPMNEdge_toNext" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="30.0">
+        <omgdi:waypoint x="364.9231109739929" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="382.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="382.0" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="414.9999977648259" y="340.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

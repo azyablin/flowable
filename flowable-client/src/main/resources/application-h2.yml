@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: flowable-demo
+  liquibase:
+    enabled: false
+
+  datasource:
+    url: jdbc:h2:mem:flowabledb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  security:
+    user:
+      name: admin
+      password: admin
+      roles: ADMIN,USER
+
+flowable:
+  rest-api-enabled: true
+  # Основная конфигурация
+  async-executor-activate: true
+  database-schema-update: true
+  history-level: audit
+
+
+
+
+
+server:
+  port: 8095
+  servlet:
+    context-path: /
+
+
+
+logging:
+  level:
+    org.flowable: INFO
+    org.springframework.security: INFO

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+             xmlns:flowable="http://flowable.org/bpmn" 
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" 
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" 
+             typeLanguage="http://www.w3.org/2001/XMLSchema" 
+             expressionLanguage="http://www.w3.org/1999/XPath" 
+             targetNamespace="http://example.com/process" 
+             exporter="Flowable Open Source Modeler" 
+             exporterVersion="6.8.0">
+  
+  <signal id="asyncResponseSignal" name="ASYNC_RESPONSE_SIGNAL" flowable:scope="global"></signal>
+  
+  <process id="product_processing" name="Обработка товаров с условиями" isExecutable="true">
+    
+    <!-- Главный процесс -->
+    <startEvent id="start" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:formProperty id="products" name="Список товаров" type="json"></flowable:formProperty>
+      </extensionElements>
+    </startEvent>
+    
+    <!-- SubProcess с multi-instance -->
+    <subProcess id="processProductSubprocess" name="Обработка товара" flowable:async="false">
+      <multiInstanceLoopCharacteristics 
+          isSequential="false" 
+          flowable:collection="products" 
+          flowable:elementVariable="product">
+        <completionCondition>
+          ${nrOfCompletedInstances == nrOfInstances}
+        </completionCondition>
+      </multiInstanceLoopCharacteristics>
+      
+      <!-- Начало subprocess -->
+      <startEvent id="subProcessStart"></startEvent>
+      
+      <!-- Первая задача обработки -->
+      <serviceTask id="processActionTask" flowable:delegateExpression="${processAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      
+      <!-- Gateway для принятия решения -->
+      <exclusiveGateway id="decisionGateway"></exclusiveGateway>
+      
+      <!-- Ожидание асинхронного ответа -->
+      <intermediateCatchEvent id="waitForResponse" name="Wait for Async Response">
+        <signalEventDefinition signalRef="asyncResponseSignal"></signalEventDefinition>
+      </intermediateCatchEvent>
+      
+      <!-- Обработчик асинхронного ответа -->
+      <serviceTask id="asyncResponseHandler" flowable:delegateExpression="${asyncResponseHandler}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      
+      <!-- Следующее действие -->
+      <serviceTask id="nextActionTask" flowable:delegateExpression="${nextAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      
+      <!-- Финальное действие -->
+      <serviceTask id="finishActionTask" flowable:delegateExpression="${finishAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      
+      <!-- Конец subprocess -->
+      <endEvent id="subProcessEnd"></endEvent>
+      
+      <!-- SEQUENCE FLOWS внутри subprocess -->
+      
+      <!-- От start к первой задаче -->
+      <sequenceFlow id="flow1" sourceRef="subProcessStart" targetRef="processActionTask"></sequenceFlow>
+      
+      <!-- От первой задачи к gateway -->
+      <sequenceFlow id="flow2" sourceRef="processActionTask" targetRef="decisionGateway"></sequenceFlow>
+      
+      <!-- Исходящие flows из gateway -->
+      <sequenceFlow id="toFinish" sourceRef="decisionGateway" targetRef="finishActionTask">
+        <conditionExpression xsi:type="tFormalExpression">
+          <![CDATA[${actionResult == 'FINISH'}]]>
+        </conditionExpression>
+      </sequenceFlow>
+      
+      <sequenceFlow id="toNext" sourceRef="decisionGateway" targetRef="nextActionTask">
+        <conditionExpression xsi:type="tFormalExpression">
+          <![CDATA[${actionResult == 'NEXT'}]]>
+        </conditionExpression>
+      </sequenceFlow>
+      
+      <sequenceFlow id="toWait" sourceRef="decisionGateway" targetRef="waitForResponse">
+        <conditionExpression xsi:type="tFormalExpression">
+          <![CDATA[${actionResult == 'WAIT'}]]>
+        </conditionExpression>
+      </sequenceFlow>
+      
+      <!-- От wait к обработчику -->
+      <sequenceFlow id="flow3" sourceRef="waitForResponse" targetRef="asyncResponseHandler"></sequenceFlow>
+      
+      <!-- От обработчиков к концу subprocess -->
+      <sequenceFlow id="flow4" sourceRef="asyncResponseHandler" targetRef="subProcessEnd"></sequenceFlow>
+      <sequenceFlow id="flow5" sourceRef="nextActionTask" targetRef="subProcessEnd"></sequenceFlow>
+      <sequenceFlow id="flow6" sourceRef="finishActionTask" targetRef="subProcessEnd"></sequenceFlow>
+      
+    </subProcess>
+    
+    <!-- Задача очистки -->
+    <serviceTask id="cleanupProducts" flowable:delegateExpression="${productCleanup}">
+      <extensionElements>
+        <flowable:field name="products">
+          <flowable:expression><![CDATA[${products}]]></flowable:expression>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    
+    <!-- Конец главного процесса -->
+    <endEvent id="end"></endEvent>
+    
+    <!-- SEQUENCE FLOWS главного процесса -->
+    <sequenceFlow id="flow7" sourceRef="start" targetRef="processProductSubprocess"></sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="processProductSubprocess" targetRef="cleanupProducts"></sequenceFlow>
+    <sequenceFlow id="flow9" sourceRef="cleanupProducts" targetRef="end"></sequenceFlow>
+    
+  </process>
+  
+  <!-- Диаграмма (оставляем как есть) -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_product_processing">
+    <!-- ... существующая диаграмма ... -->
+  </bpmndi:BPMNDiagram>
+  
+</definitions>

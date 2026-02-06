@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:flowable="http://flowable.org/bpmn"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             targetNamespace="http://example.com/process"
+             typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath"
+             xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+
+  <process id="product_processing" name="Обработка товаров с условиями" isExecutable="true">
+
+    <startEvent id="start">
+      <extensionElements>
+        <flowable:formProperty id="products" name="Список товаров" type="json" />
+      </extensionElements>
+    </startEvent>
+
+    <!-- Multi-instance subprocess для параллельной обработки товаров -->
+    <subProcess id="processProductSubprocess">
+      
+      <multiInstanceLoopCharacteristics 
+          flowable:elementVariable="product" 
+          isSequential="false">
+        <loopDataInputRef>products</loopDataInputRef>
+        <inputDataItem name="product" />
+        <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+
+      <!-- Начало subprocess для одного товара -->
+      <startEvent id="subProcessStart" />
+
+      <!-- Вызов основного JavaDelegate -->
+      <serviceTask id="processActionTask" 
+                   flowable:delegateExpression="${processAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression>${product}</flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+
+      <!-- Exclusive Gateway для определения следующего действия -->
+      <exclusiveGateway id="decisionGateway" />
+
+      <!-- Ветка WAIT - ожидание ответа -->
+      <sequenceFlow id="toWait" sourceRef="decisionGateway" targetRef="waitForResponse">
+        <conditionExpression xsi:type="tFormalExpression">${actionResult == 'WAIT'}</conditionExpression>
+      </sequenceFlow>
+
+      <!-- Ветка NEXT - вызов nextAction -->
+      <sequenceFlow id="toNext" sourceRef="decisionGateway" targetRef="nextActionTask">
+        <conditionExpression xsi:type="tFormalExpression">${actionResult == 'NEXT'}</conditionExpression>
+      </sequenceFlow>
+
+      <!-- Ветка FINISH - вызов finishAction -->
+      <sequenceFlow id="toFinish" sourceRef="decisionGateway" targetRef="finishActionTask">
+        <conditionExpression xsi:type="tFormalExpression">${actionResult == 'FINISH'}</conditionExpression>
+      </sequenceFlow>
+
+      <!-- Ожидание ответа для WAIT сценария -->
+      <intermediateCatchEvent id="waitForResponse">
+        <timerEventDefinition>
+          <timeDuration>PT5S</timeDuration>
+        </timerEventDefinition>
+      </intermediateCatchEvent>
+
+      <!-- Вызов асинхронного обработчика после ожидания -->
+      <serviceTask id="asyncResponseHandler" 
+                   flowable:delegateExpression="${asyncResponseHandler}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression>${product}</flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+
+      <!-- Действие для NEXT -->
+      <serviceTask id="nextActionTask" 
+                   flowable:delegateExpression="${nextAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression>${product}</flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+
+      <!-- Действие для FINISH -->
+      <serviceTask id="finishActionTask" 
+                   flowable:delegateExpression="${finishAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression>${product}</flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+
+      <!-- Конец subprocess -->
+      <endEvent id="subProcessEnd" />
+
+      <!-- Потоки управления -->
+      <sequenceFlow id="flow1" sourceRef="subProcessStart" targetRef="processActionTask" />
+      <sequenceFlow id="flow2" sourceRef="processActionTask" targetRef="decisionGateway" />
+      <sequenceFlow id="flow3" sourceRef="waitForResponse" targetRef="asyncResponseHandler" />
+      <sequenceFlow id="flow4" sourceRef="asyncResponseHandler" targetRef="subProcessEnd" />
+      <sequenceFlow id="flow5" sourceRef="nextActionTask" targetRef="subProcessEnd" />
+      <sequenceFlow id="flow6" sourceRef="finishActionTask" targetRef="subProcessEnd" />
+
+    </subProcess>
+
+    <!-- Удаление товаров после завершения всех subprocess -->
+    <serviceTask id="cleanupProducts" 
+                 flowable:delegateExpression="${productCleanup}">
+      <extensionElements>
+        <flowable:field name="products">
+          <flowable:expression>${products}</flowable:expression>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+
+    <endEvent id="end" />
+
+    <sequenceFlow id="flow7" sourceRef="start" targetRef="processProductSubprocess" />
+    <sequenceFlow id="flow8" sourceRef="processProductSubprocess" targetRef="cleanupProducts" />
+    <sequenceFlow id="flow9" sourceRef="cleanupProducts" targetRef="end" />
+
+  </process>
+</definitions>

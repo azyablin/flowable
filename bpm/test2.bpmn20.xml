@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:flowable="http://flowable.org/bpmn"
+             targetNamespace="http://example.com/process">
+
+  <process id="async_product_processing" name="Асинхронная обработка товаров с ожиданием" isExecutable="true">
+
+    <startEvent id="start">
+      <extensionElements>
+        <flowable:formProperty id="products" name="Список товаров" type="json" />
+      </extensionElements>
+    </startEvent>
+
+    <!-- Multi-instance subprocess для параллельной обработки -->
+    <subProcess id="processProductsSubprocess" 
+                flowable:async="true" 
+                flowable:exclusive="false">
+      
+      <multiInstanceLoopCharacteristics 
+          flowable:elementVariable="product" 
+          flowable:collection="${products}" 
+          isSequential="false">
+        <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+
+      <!-- Subprocess для одного товара -->
+      <startEvent id="subProcessStart" />
+
+      <!-- JavaDelegate который запускает асинхронный метод -->
+      <serviceTask id="startAsyncProcessing" 
+                   flowable:delegateExpression="${asyncProductProcessor}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression>${product}</flowable:expression>
+          </flowable:field>
+          <flowable:field name="processInstanceId">
+            <flowable:expression>${rootProcessInstanceId}</flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+
+      <!-- Ожидание сигнала от асинхронного метода -->
+      <intermediateCatchEvent id="waitForAsyncResponse">
+        <signalEventDefinition signalRef="productProcessedSignal" />
+      </intermediateCatchEvent>
+
+      <!-- Удаление товара после получения ответа -->
+      <serviceTask id="removeProduct" 
+                   flowable:delegateExpression="${productRemover}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression>${product}</flowable:expression>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+
+      <endEvent id="subProcessEnd" />
+
+      <sequenceFlow id="flow1" sourceRef="subProcessStart" targetRef="startAsyncProcessing" />
+      <sequenceFlow id="flow2" sourceRef="startAsyncProcessing" targetRef="waitForAsyncResponse" />
+      <sequenceFlow id="flow3" sourceRef="waitForAsyncResponse" targetRef="removeProduct" />
+      <sequenceFlow id="flow4" sourceRef="removeProduct" targetRef="subProcessEnd" />
+
+    </subProcess>
+
+    <endEvent id="end" />
+
+    <sequenceFlow id="flow5" sourceRef="start" targetRef="processProductsSubprocess" />
+    <sequenceFlow id="flow6" sourceRef="processProductsSubprocess" targetRef="end" />
+
+    <signal id="productProcessedSignal" name="PRODUCT_PROCESSED" />
+
+  </process>
+</definitions>

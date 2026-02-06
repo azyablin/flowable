@@ -1,0 +1,15 @@
+services: 
+  hazelcast: 
+    image: hazelcast/hazelcast:latest
+    container_name: hazelcast
+    restart: unless-stopped
+    environment: 
+      HZ_CLUSTERNAME: dev
+    ports: 
+      - "5701:5701"
+    networks: 
+      - hz-network
+ 
+networks: 
+  hz-network: 
+    driver: bridge
