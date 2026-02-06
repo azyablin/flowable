@@ -20,6 +20,8 @@ public class HazelcastService {
 
     private static final String EXECUTION_MAP_NAME = "product";
 
+    private static final String LOCK_MAP_NAME = "flowable_lock";
+
     private final HazelcastInstance hazelcastInstance;
 
     public void addExecution(String executionId) {
@@ -28,12 +30,16 @@ public class HazelcastService {
         queue.add(executionId);
     }
 
-
-
     public Queue<String> getExecutionQueue() {
         return hazelcastInstance.getQueue(EXECUTION_MAP_NAME);
     }
 
+    public boolean tryLock(String lockName) {
+        return hazelcastInstance.getMap(lockName).tryLock(LOCK_MAP_NAME);
+    }
 
+    public void unlock(String lockName) {
+        hazelcastInstance.getMap(lockName).unlock(LOCK_MAP_NAME);
+    }
 
 }

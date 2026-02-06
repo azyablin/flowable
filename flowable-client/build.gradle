@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+   // id 'war'
     id 'org.springframework.boot' version '3.1.0'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'io.freefair.lombok' version '6.6.1'
@@ -21,7 +22,7 @@ ext {
 
 dependencies {
     // Spring Boot
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter-web');
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     // Flowable
@@ -34,6 +35,7 @@ dependencies {
         exclude group: "io.swagger.core.v3", module: "swagger-annotations"
     }
 
+    compileOnly 'org.springframework.boot:spring-boot-starter-tomcat'
 
     implementation 'com.hazelcast:hazelcast'
     implementation 'com.hazelcast:hazelcast-spring'
@@ -58,6 +60,10 @@ test {
 }
 
 bootJar {
-    archiveFileName = 'flowable.jar'
+    enabled = true
 }
 
+/*war {
+    archiveFileName = 'flowable.war'
+}
+*/
