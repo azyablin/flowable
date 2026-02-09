@@ -36,14 +36,15 @@ public class BpmProcessService {
     }
 
     @Transactional
-    public BpmExecutionInfo updateProcessTable(Supplier<String> processCreator) {
+    public  List<BpmProcess>  getBatch() {
         var processes = bpmProcessRepository.findWithSkipLockedNative()
             .limit(100)
-            .map(bpmProcess -> bpmProcess.setProcessId(processCreator.get()))
             .toList();
-        bpmProcessRepository.saveAllAndFlush(processes);
-        return new BpmExecutionInfo(processes.size(), bpmProcessRepository.countByProcessIdNotNull());
+        processes.forEach(bpmProcess -> bpmProcess.setProgress(1));
+        bpmProcessRepository.saveAll(processes);
+        return processes;
     }
+
 
     public void finishProcess(String processId) {
         if (bpmProcessRepository.deleteByProcessId(processId) == 0) {
@@ -54,6 +55,15 @@ public class BpmProcessService {
     public long count() {
         return bpmProcessRepository.count();
     }
+
+    public BpmProcess save(BpmProcess bpmProcess) {
+       return bpmProcessRepository.save(bpmProcess);
+    }
+
+    public long countByProcessIdNotNull() {
+        return bpmProcessRepository.count();
+    }
+
 
 
 }

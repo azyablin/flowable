@@ -15,7 +15,7 @@ spring:
 
 
   datasource:
-    url: {jdbc.url:jdbc:oracle:thin:@//localhost:1521/XE}
+    url: jdbc:oracle:thin:@//localhost:1521/XE
     username: flowable
     password: flowable
     driver-class-name: oracle.jdbc.OracleDriver

@@ -17,7 +17,7 @@ public interface BpmProcessRepository extends JpaRepository<BpmProcess, String> 
  
             SELECT be1_0.* 
             FROM bpm_process be1_0 
-            WHERE process_id is null  
+            WHERE process_id is null  and progress is null
             ORDER BY be1_0.id
                      FOR UPDATE SKIP LOCKED
  

@@ -24,4 +24,7 @@ public class BpmProcess {
     @Column(name = "process_id", unique = true)
     private String processId;
 
+    @Column(name = "progress")
+    private Integer progress;
+
 }
