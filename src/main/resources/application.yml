@@ -39,7 +39,7 @@ flowable:
 
 
 server:
-  port: {server.port:8095}
+  port: ${server.port:8095}
   servlet:
     context-path: /
 

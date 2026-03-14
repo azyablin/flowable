@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://example.com/process" exporter="Flowable Open Source Modeler" exporterVersion="6.8.0">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://example.com/process" exporter="Flowable Open Source Modeler" exporterVersion="6.8.0">
   <signal id="asyncResponseSignal" name="ASYNC_RESPONSE_SIGNAL" flowable:scope="global"></signal>
   <process id="product_processing" name="Обработка товаров с условиями" isExecutable="true">
     <startEvent id="start" flowable:formFieldValidation="true">
@@ -7,7 +8,7 @@
         <flowable:formProperty id="products" name="Список товаров" type="json"></flowable:formProperty>
       </extensionElements>
     </startEvent>
-    <subProcess id="processProductSubprocess" name="subProcess" flowable:async="true" flowable:exclusive="false">
+    <subProcess id="processProductSubprocess" name="subProcess" flowable:async="false" flowable:exclusive="false">
       <multiInstanceLoopCharacteristics isSequential="false" flowable:collection="products" flowable:elementVariable="product">
         <extensionElements></extensionElements>
         <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>

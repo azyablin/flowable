@@ -7,7 +7,7 @@
         <flowable:formProperty id="products" name="Список товаров" type="json"></flowable:formProperty>
       </extensionElements>
     </startEvent>
-    <subProcess id="processProductSubprocess" name="subProcess" flowable:async="true">
+    <transaction id="processProductSubprocess" name="subProcess">
       <multiInstanceLoopCharacteristics isSequential="false" flowable:collection="products" flowable:elementVariable="product">
         <extensionElements></extensionElements>
         <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>
@@ -27,7 +27,7 @@
       <sequenceFlow id="flow1" sourceRef="subProcessStart" targetRef="processActionTask"></sequenceFlow>
       <sequenceFlow id="flow2" sourceRef="processActionTask" targetRef="waitForResponse"></sequenceFlow>
       <sequenceFlow id="flow3" sourceRef="waitForResponse" targetRef="subProcessEnd"></sequenceFlow>
-    </subProcess>
+    </transaction>
     <serviceTask id="cleanupProducts" flowable:delegateExpression="${productCleanup}">
       <extensionElements>
         <flowable:field name="products">
