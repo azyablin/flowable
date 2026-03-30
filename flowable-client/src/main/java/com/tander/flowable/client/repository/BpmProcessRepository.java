@@ -25,11 +25,11 @@ public interface BpmProcessRepository extends JpaRepository<BpmProcess, String> 
         nativeQuery = true)
     Stream<BpmProcess> findWithSkipLockedNative();
 
-    @Query(value = """
+   /* @Query(value = """
         select name_ from FLOWABLE.ACT_GE_PROPERTY WHERE  name_ = :property FOR UPDATE SKIP LOCKED
         """,
         nativeQuery = true)
-    Optional<String> lockProperty(@Param("property")  String property);
+    Optional<String> lockProperty(@Param("property")  String property);*/
 
     long deleteByProcessId(String processId);
 

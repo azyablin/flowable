@@ -4,10 +4,9 @@ package com.tander.flowable.client.repository;
 
 import com.tander.flowable.client.model.BpmExecution;
 import com.tander.flowable.client.util.QueryHintsUtil;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.QueryHint;
+import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
 import org.hibernate.cfg.AvailableSettings;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

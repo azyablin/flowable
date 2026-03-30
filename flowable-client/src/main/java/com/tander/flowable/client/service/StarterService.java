@@ -1,6 +1,6 @@
 package com.tander.flowable.client.service;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +54,7 @@ public class StarterService {
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         if (!ObjectUtils.isEmpty(initProcessCount) && !ObjectUtils.isEmpty(initProcessItemCount)) {
-            taskExecutor.execute(() ->  runProcesses(initProcessCount, initProcessItemCount));
+            taskExecutor.execute(() -> runProcesses(initProcessCount, initProcessItemCount));
         }
 
         if (processContinue != null) {
@@ -64,8 +64,11 @@ public class StarterService {
 
     @SneakyThrows
     public void runProcesses(int processCount, int itemCount) {
+        if (processCount == 0) {
+            return;
+        }
         var startTime = System.currentTimeMillis();
-        var tExecutor = (ThreadPoolTaskExecutor)executor;
+        var tExecutor = (ThreadPoolTaskExecutor) executor;
         bpmnProcessCreationService.fillProcessTable(processCount);
         log.info("**************START PROCESSES************");
         while (true) {
@@ -82,7 +85,7 @@ public class StarterService {
             log.info("Создано процессов {}, порт {} ", bpmProcessService.countByProcessIdNotNull(), serverPort);
         }
         log.info("СОЗДАНИЕ ПРОЦЕССОВ ЗАВЕРШЕНО ЗА {} СЕК, ПОРТ {}",
-            (System.currentTimeMillis() - startTime)/1000, serverPort);
+            (System.currentTimeMillis() - startTime) / 1000, serverPort);
 
     }
 }

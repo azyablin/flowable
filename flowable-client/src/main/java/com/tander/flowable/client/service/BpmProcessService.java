@@ -25,14 +25,19 @@ public class BpmProcessService {
 
     @Transactional
     public void fillProcessTable(int processCount) {
-        bpmProcessRepository.lockProperty("common.schema.version")
+        var processes = IntStream.range(0, processCount)
+            .boxed()
+            .map(integer -> new BpmProcess())
+            .toList();
+        bpmProcessRepository.saveAll(processes);
+      /*  bpmProcessRepository.lockProperty("common.schema.version")
             .ifPresent(s -> {
                 var processes = IntStream.range(0, processCount)
                     .boxed()
                     .map(integer -> new BpmProcess())
                     .toList();
                 bpmProcessRepository.saveAll(processes);
-            });
+            });*/
     }
 
     @Transactional

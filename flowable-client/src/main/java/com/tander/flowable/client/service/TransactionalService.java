@@ -1,6 +1,6 @@
 package com.tander.flowable.client.service;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service

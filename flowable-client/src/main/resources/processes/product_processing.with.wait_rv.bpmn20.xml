@@ -8,8 +8,9 @@
       </extensionElements>
     </startEvent>
     <subProcess id="processProductSubprocess" name="subProcess"
-                flowable:async="false"
+                flowable:async="true"
                 flowable:exclusive="false"
+
 
     >
       <multiInstanceLoopCharacteristics isSequential="false"

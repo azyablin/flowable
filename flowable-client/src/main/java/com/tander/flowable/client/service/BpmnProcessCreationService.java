@@ -1,7 +1,7 @@
 package com.tander.flowable.client.service;
 
 import com.tander.flowable.client.model.BpmProcess;
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.RepositoryService;
@@ -23,7 +23,7 @@ public class BpmnProcessCreationService {
 
     private static final String PROCESS_DEFINITION_KEY = "product_processing_wait_rv";
 
-    private static final String PROCESS_DEFINITION_PATH = "processes/product_processing.with.wait.bpmn20.xml";
+    private static final String PROCESS_DEFINITION_PATH = "processes/product_processing.with.wait_rv.bpmn20.xml";
 
     private static final String PROCESS_NAME = "Product Processing Deployment With Wait";
 

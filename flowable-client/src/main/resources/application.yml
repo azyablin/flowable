@@ -1,8 +1,12 @@
 spring:
+
   application:
     name: flowable-client
   liquibase:
     enabled: false
+  cache:
+    type: hazelcast
+    cache-names: users,products,orders
 
   jpa:
     show-sql: false
@@ -11,14 +15,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.OracleDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 
   datasource:
-    url: jdbc:oracle:thin:@//localhost:1521/XE
+    url: jdbc:postgresql://localhost:5432/flowable2
     username: flowable
     password: flowable
-    driver-class-name: oracle.jdbc.OracleDriver
+    driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 50
       minimum-idle: 5
@@ -36,35 +40,6 @@ spring:
       roles: ADMIN,USER
 
 flowable:
-  async-executor-activate: true
-  async-executor-core-pool-size: 10
-  async-executor-max-pool-size: 50
-  async-executor-keep-alive-seconds: 60
-
-  # Ускорение получения jobs из БД
-  async-executor-default-async-job-acquire-wait-time: 1000  # 1 секунда вместо 10
-  async-executor-default-timer-job-acquire-wait-time: 1000
-  async-executor-max-async-jobs-due-per-acquisition: 500    # Больше за раз
-  async-executor-max-timer-jobs-per-acquisition: 500
-
-  # Оптимизация блокировок
-  async-executor-lock-wait-time: 60000      # 1 минута вместо 5
-  async-executor-timer-lock-time-in-millis: 120000
-  async-executor-async-job-lock-time-in-millis: 120000
-  async-executor-max-locked-rows: 5000      # Больше одновременно
-
-  # Параллельная обработка
-  async-executor-acquire-by-due-date: true
-  async-executor-acquire-by-priority: true
-
-  rest-api-enabled: true
-
-
-  database-schema-update: true
-  database-type: oracle
-  transaction:
-    propagation: REQUIRED
-  history-level: none
   cmmn:
     enabled: false
   dmn:
@@ -72,6 +47,7 @@ flowable:
   process:
     async:
       executor:
+        core-pool-size: 80
         global-acquire-lock-enabled: true
 
 
@@ -86,7 +62,6 @@ server:
     context-path: /
 
 
-
 logging:
   level:
     org.flowable.engine: INFO
@@ -95,3 +70,8 @@ springdoc:
   swagger-ui:
     doc-expansion: none
     default-models-expand-depth: -1
+
+app:
+  flowable:
+    async-executor:
+      seconds-to-wait-on-shutdown: 57
