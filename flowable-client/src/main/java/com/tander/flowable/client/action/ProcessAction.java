@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.common.spring.SpringTransactionInterceptor;
 import org.flowable.engine.ManagementService;
+import org.flowable.engine.delegate.BpmnError;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 import org.hibernate.PropertyValueException;
@@ -38,7 +39,6 @@ public class ProcessAction implements JavaDelegate {
     private final TransactionalExecutor transactionalExecutor;
 
     @Override
-    @Transactional
     public void execute(DelegateExecution execution) {
        /* try {
             transactionalExecutor.execute(() ->
@@ -51,9 +51,13 @@ public class ProcessAction implements JavaDelegate {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }*/
-        BpmEntity bpmEntity = new BpmEntity();
-        bpmEntity.setId("qqq");
-        entityManager.merge(bpmEntity);
+        try {
+            BpmEntity bpmEntity = new BpmEntity();
+            bpmEntity.setId("qqq");
+            entityManager.merge(bpmEntity);
+        } catch (Exception e) {
+            throw new BpmnError("MY_BUSINESS_ERROR", "Не хватает данных: " + e.getMessage());
+        }
         log.info("Подпроцесс запущен: Connection {} , Thread {}, Task {}", entityManager.hashCode(), Thread.currentThread().getId(), execution.getCurrentActivityId());
   }
 

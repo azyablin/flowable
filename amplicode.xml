@@ -7,11 +7,6 @@
           <package value="com.tander.flowable.client" />
         </packages>
       </persistence-unit>
-      <persistence-unit moduleName="flowable.flowable-testclient.main" name="Default">
-        <packages>
-          <package value="com.tander.flowable.testclient" />
-        </packages>
-      </persistence-unit>
     </persistence-units>
   </component>
 </project>
