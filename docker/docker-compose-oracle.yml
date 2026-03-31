@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  oracle-12c-xe:
+    image: gvenzl/oracle-xe:18.4.0
+    container_name: oracle-12c-xe
+    environment:
+      - ORACLE_PASSWORD=oracle
+      - APP_USER=app_user
+      - APP_USER_PASSWORD=app_password
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./init-scripts:/container-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+volumes:
+  oracle-data:

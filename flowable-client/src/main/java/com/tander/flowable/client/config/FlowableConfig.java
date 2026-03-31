@@ -1,6 +1,7 @@
 package com.tander.flowable.client.config;
 
 import com.tander.flowable.client.FlowableErrorEventListener;
+import com.tander.flowable.client.action.TransactionalExecutor;
 import com.tander.flowable.client.config.properties.AppFlowableProperties;
 import com.tander.flowable.client.interceptor.RollbackExceptionInterceptor;
 import org.flowable.common.engine.impl.AbstractEngineConfiguration;
@@ -22,6 +23,9 @@ public class FlowableConfig implements EngineConfigurationConfigurer<SpringProce
 
     @Autowired
     private FlowableErrorEventListener errorListener;
+
+    @Autowired
+    private TransactionalExecutor transactionalExecutor;
 
     @Lookup
     public AppFlowableProperties appFlowableProperties() {
@@ -65,7 +69,7 @@ public class FlowableConfig implements EngineConfigurationConfigurer<SpringProce
         var interceptors = config.getCommandInterceptors();
         for (int i = 0; i < interceptors.size(); i++) {
             if (interceptors.get(i) instanceof SpringTransactionInterceptor) {
-                interceptors.add(i, new RollbackExceptionInterceptor());
+                interceptors.add(i, new RollbackExceptionInterceptor(transactionalExecutor));
                 break;
             }
         }

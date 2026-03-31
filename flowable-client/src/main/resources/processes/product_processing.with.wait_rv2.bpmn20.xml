@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://example.com/process" exporter="Flowable Design" exporterVersion="2025.1.03" design:palette="flowable-work-process-palette">
+  <signal id="asyncResponseSignal" name="ASYNC_RESPONSE_SIGNAL" flowable:scope="global"></signal>
+  <process id="product_processing_wait_rv2" name="Обработка товаров с ожиданием_rv2" isExecutable="true">
+    <extensionElements>
+      <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
+      <design:creationdate><![CDATA[2026-03-30T21:16:05.258Z]]></design:creationdate>
+      <design:modificationdate><![CDATA[2026-03-30T21:20:52.027Z]]></design:modificationdate>
+    </extensionElements>
+    <subProcess id="processProductSubprocess" name="subProcess" flowable:async="true" flowable:exclusive="false">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" flowable:collection="products" flowable:elementVariable="product" flowable:noWaitStatesAsyncLeave="true">
+        <extensionElements></extensionElements>
+        <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+      <serviceTask id="processActionTask" flowable:delegateExpression="${processAction}">
+        <extensionElements>
+          <flowable:field name="product">
+            <flowable:expression><![CDATA[${product}]]></flowable:expression>
+          </flowable:field>
+          <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
+          <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+        </extensionElements>
+      </serviceTask>
+      <startEvent id="subProcessStart" flowable:formFieldValidation="true">
+        <extensionElements>
+          <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
+          <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
+        </extensionElements>
+      </startEvent>
+      <intermediateCatchEvent id="IntermediateSignalEventCatching_1">
+        <extensionElements>
+          <design:stencilid><![CDATA[IntermediateSignalEventCatching]]></design:stencilid>
+        </extensionElements>
+        <signalEventDefinition signalRef="asyncResponseSignal"></signalEventDefinition>
+      </intermediateCatchEvent>
+      <endEvent id="subProcessEnd">
+        <extensionElements>
+          <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        </extensionElements>
+      </endEvent>
+      <sequenceFlow id="flow2" sourceRef="processActionTask" targetRef="IntermediateSignalEventCatching_1">
+        <extensionElements>
+          <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="flow1" sourceRef="subProcessStart" targetRef="processActionTask">
+        <extensionElements>
+          <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="flow3" sourceRef="IntermediateSignalEventCatching_1" targetRef="subProcessEnd">
+        <extensionElements>
+          <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        </extensionElements>
+      </sequenceFlow>
+    </subProcess>
+    <serviceTask id="cleanupProducts" flowable:delegateExpression="${productCleanup}">
+      <extensionElements>
+        <flowable:field name="products">
+          <flowable:expression><![CDATA[${products}]]></flowable:expression>
+        </flowable:field>
+        <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <startEvent id="start" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:formProperty id="products" name="Список товаров" type="json"></flowable:formProperty>
+        <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
+        <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="end">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="flow8" sourceRef="processProductSubprocess" targetRef="cleanupProducts">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow9" sourceRef="cleanupProducts" targetRef="end">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="start" targetRef="processProductSubprocess">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_product_processing_wait_rv2">
+    <bpmndi:BPMNPlane bpmnElement="product_processing_wait_rv2" id="BPMNPlane_product_processing_wait_rv2">
+      <bpmndi:BPMNShape bpmnElement="processProductSubprocess" id="BPMNShape_processProductSubprocess">
+        <omgdc:Bounds height="390.0" width="690.0" x="59.999998211860714" y="2.8421709430404007E-14"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="processActionTask" id="BPMNShape_processActionTask">
+        <omgdc:Bounds height="60.0" width="100.0" x="149.99999552965178" y="164.99999508261698"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="subProcessStart" id="BPMNShape_subProcessStart">
+        <omgdc:Bounds height="30.0" width="30.000000000000007" x="79.99999821186071" y="180.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IntermediateSignalEventCatching_1" id="BPMNShape_IntermediateSignalEventCatching_1">
+        <omgdc:Bounds height="29.99999999999997" width="30.0" x="476.4" y="279.6"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="subProcessEnd" id="BPMNShape_subProcessEnd">
+        <omgdc:Bounds height="28.0" width="28.000000000000057" x="699.9999982118607" y="180.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cleanupProducts" id="BPMNShape_cleanupProducts">
+        <omgdc:Bounds height="60.0" width="100.0" x="914.9999454617524" y="162.999990254641"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="0.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="1064.999972730876" y="178.99999511241927"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="30.0">
+        <omgdi:waypoint x="109.0" y="194.0"></omgdi:waypoint>
+        <omgdi:waypoint x="149.0" y="194.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2" flowable:sourceDockerX="50.0" flowable:sourceDockerY="30.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="249.0" y="194.0"></omgdi:waypoint>
+        <omgdi:waypoint x="491.4" y="194.0"></omgdi:waypoint>
+        <omgdi:waypoint x="491.4" y="279.59999999999997"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="506.4" y="294.6"></omgdi:waypoint>
+        <omgdi:waypoint x="713.9999982118607" y="294.6"></omgdi:waypoint>
+        <omgdi:waypoint x="713.9999982118607" y="208.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="345.0" flowable:targetDockerY="195.0">
+        <omgdi:waypoint x="29.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="59.0" y="195.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8" flowable:sourceDockerX="345.0" flowable:sourceDockerY="195.0" flowable:targetDockerX="50.0" flowable:targetDockerY="30.0">
+        <omgdi:waypoint x="749.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="794.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="791.0" y="192.0"></omgdi:waypoint>
+        <omgdi:waypoint x="914.0" y="192.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9" flowable:sourceDockerX="50.0" flowable:sourceDockerY="30.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="1014.0" y="192.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1064.0" y="192.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
