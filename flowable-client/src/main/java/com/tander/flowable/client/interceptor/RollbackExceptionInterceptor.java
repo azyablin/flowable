@@ -1,6 +1,7 @@
 package com.tander.flowable.client.interceptor;
 
 import com.tander.flowable.client.action.TransactionalExecutor;
+import com.tander.flowable.client.model.ActionErrorInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.common.engine.impl.interceptor.AbstractCommandInterceptor;
@@ -11,11 +12,13 @@ import org.flowable.job.service.impl.cmd.ExecuteAsyncRunnableJobCmd;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.transaction.UnexpectedRollbackException;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Slf4j
 public class RollbackExceptionInterceptor extends AbstractCommandInterceptor {
 
-    private static ThreadLocal<Class<?>> threadLocalVariable = new ThreadLocal<>();
+    private static ThreadLocal<ActionErrorInfo> actionErrorInfoThreadLocal = new ThreadLocal<>();
 
     private final TransactionalExecutor transactionalExecutor;
 
@@ -23,13 +26,21 @@ public class RollbackExceptionInterceptor extends AbstractCommandInterceptor {
     public <T> T execute(CommandConfig config, Command<T> command, CommandExecutor commandExecutor) {
         try {
             if (command instanceof ExecuteAsyncRunnableJobCmd) {
-                return transactionalExecutor.executeAndGet(() -> getNext().execute(config, command, commandExecutor));
-             /*   try {
+
+                try {
                     return transactionalExecutor.executeAndGet(() -> getNext().execute(config, command, commandExecutor));
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
-                    return null;
-                }*/
+                    try {
+                        if (getActionErrorInfo().isPresent()) {
+                            transactionalExecutor.executeAndGetNew(() -> getNext().execute(config, command, commandExecutor));
+                        } else {
+                            throw e;
+                        }
+                    } finally {
+                        actionErrorInfoThreadLocal.remove();
+                    }
+                }
             }
             return getNext().execute(config, command, commandExecutor);
         } catch (UnexpectedRollbackException e) {
@@ -41,9 +52,12 @@ public class RollbackExceptionInterceptor extends AbstractCommandInterceptor {
         }
     }
 
-    public static void setThreadLocalVariable(Class<?> currentClass) {
-        threadLocalVariable.set(currentClass);
+    public static void setActionErrorInfo(ActionErrorInfo actionErrorInfo) {
+        RollbackExceptionInterceptor.actionErrorInfoThreadLocal.set(actionErrorInfo);
     }
 
-
+    public static Optional<ActionErrorInfo> getActionErrorInfo() {
+        return Optional.ofNullable(actionErrorInfoThreadLocal.get());
+    }
 }
+

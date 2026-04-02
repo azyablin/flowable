@@ -17,7 +17,7 @@ public class BpmEntity {
     @Column(name = "id", nullable = false)
     private String id;
 
-    @Column(name = "code", nullable = false)
+    @Column(name = "code", nullable = false, unique = true)
     private String code;
 
 }

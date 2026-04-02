@@ -4,6 +4,8 @@ import com.tander.flowable.client.FlowableErrorEventListener;
 import com.tander.flowable.client.action.TransactionalExecutor;
 import com.tander.flowable.client.config.properties.AppFlowableProperties;
 import com.tander.flowable.client.interceptor.RollbackExceptionInterceptor;
+import com.tander.flowable.client.listener.GlobalErrorEventListener;
+import org.flowable.common.engine.api.delegate.event.FlowableEventListener;
 import org.flowable.common.engine.impl.AbstractEngineConfiguration;
 import org.flowable.common.engine.impl.EngineConfigurator;
 import org.flowable.common.engine.impl.history.HistoryLevel;
@@ -17,6 +19,9 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 @EnableConfigurationProperties(AppFlowableProperties.class)
 public class FlowableConfig implements EngineConfigurationConfigurer<SpringProcessEngineConfiguration>, EngineConfigurator {
@@ -26,6 +31,9 @@ public class FlowableConfig implements EngineConfigurationConfigurer<SpringProce
 
     @Autowired
     private TransactionalExecutor transactionalExecutor;
+
+    @Autowired
+    private GlobalErrorEventListener globalErrorEventListener;
 
     @Lookup
     public AppFlowableProperties appFlowableProperties() {
@@ -38,9 +46,12 @@ public class FlowableConfig implements EngineConfigurationConfigurer<SpringProce
 
 
 
+//throw new BpmnError("MY_BUSINESS_ERROR", "Не хватает данных: " + e.getMessage());
+        List<FlowableEventListener> listeners = new ArrayList<>();
+        listeners.add(globalErrorEventListener);
+        config.setEventListeners(listeners);
 
-
-        config.addConfigurator(this);
+    //   config.addConfigurator(this);
         config.setAsyncExecutorActivate(asyncExecutorProp.activate());
         config.setAsyncExecutorNumberOfRetries(3);
         config.setDatabaseSchemaUpdate("true");

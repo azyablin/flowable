@@ -1,7 +1,6 @@
 package com.tander.flowable.client.action;
 
 
-import com.tander.flowable.client.interceptor.RollbackExceptionInterceptor;
 import com.tander.flowable.client.model.ActionErrorInfo;
 import com.tander.flowable.client.model.BpmEntity;
 import com.tander.flowable.client.repository.BpmEntityRepository;
@@ -10,15 +9,14 @@ import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component("processAction")
+@Component("afterAction")
 @RequiredArgsConstructor
 @Slf4j
-public class ProcessAction extends BaseAction {
+public class AfterAction extends BaseAction {
 
 
     private ConcurrentHashMap<String, Exception> EXECUTION_EXCEPTION = new ConcurrentHashMap<>();
@@ -31,17 +29,17 @@ public class ProcessAction extends BaseAction {
 
     private final TransactionalExecutor transactionalExecutor;
 
-    //endProcessAction
+
     @Override
     public void internalExecute(DelegateExecution execution) {
-      /* BpmEntity bpmEntity = new BpmEntity();
+        BpmEntity bpmEntity = new BpmEntity();
         bpmEntity.setId("qqq");
         bpmEntity.setCode("eee");
         entityManager.merge(bpmEntity);
         bpmEntity = new BpmEntity();
         bpmEntity.setId("qqq1");
         bpmEntity.setCode("eee");
-        entityManager.merge(bpmEntity);*/
+        entityManager.merge(bpmEntity);
         log.info("Подпроцесс запущен: Connection {} , Thread {}, Task {}", entityManager.hashCode(), Thread.currentThread().getId(), execution.getCurrentActivityId());
 
     }

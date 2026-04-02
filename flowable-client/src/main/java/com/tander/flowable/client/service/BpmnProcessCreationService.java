@@ -40,10 +40,9 @@ public class BpmnProcessCreationService {
     private String serverPort;
 
     public void fillProcessTable(int processCount) {
-        deployProcess(false);
-        if (bpmProcessService.count() == 0) {
-            transactionalService.execute(() -> bpmProcessService.fillProcessTable(processCount));
-        }
+
+        transactionalService.execute(() -> bpmProcessService.fillProcessTable(processCount));
+
     }
 
 
@@ -67,13 +66,11 @@ public class BpmnProcessCreationService {
             processInstance.getId(), Thread.currentThread().getId(), serverPort);
     }
 
-    public void deployProcess(boolean ignoreExisting) {
-        if (ignoreExisting) {
-            repositoryService.createDeployment()
-                .addClasspathResource(PROCESS_DEFINITION_PATH)
-                .name(PROCESS_NAME)
-                .deploy();
-        }
+    public void deployProcess() {
+        repositoryService.createDeployment()
+            .addClasspathResource(PROCESS_DEFINITION_PATH)
+            .name(PROCESS_NAME)
+            .deploy();
     }
 
 

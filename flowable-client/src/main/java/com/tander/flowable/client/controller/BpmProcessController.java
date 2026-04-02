@@ -30,7 +30,7 @@ public class BpmProcessController {
 
     @GetMapping("/deploy")
     public void deploy() {
-        processTestService.deployProcess(true);
+        processTestService.deployProcess();
     }
 
     @GetMapping("/continue")
