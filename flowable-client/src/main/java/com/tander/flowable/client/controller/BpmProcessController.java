@@ -1,6 +1,7 @@
 package com.tander.flowable.client.controller;
 
 import com.tander.flowable.client.model.CreationProcessesStat;
+import com.tander.flowable.client.service.BpmProcessService;
 import com.tander.flowable.client.service.BpmnProcessCreationService;
 import com.tander.flowable.client.service.BpmnSignalService;
 import com.tander.flowable.client.service.StarterService;
@@ -22,11 +23,20 @@ public class BpmProcessController {
 
     private final StarterService starterService;
 
+    private final BpmProcessService bpmProcessService;
+
     @Operation
     @GetMapping("/start")
     public void start(@RequestParam int processCount, @RequestParam int itemCount) {
         starterService.runProcesses(processCount, itemCount);
     }
+
+    @Operation
+    @GetMapping("/processes/clear")
+    public void clearProcesses(@RequestParam int processCount, @RequestParam int itemCount) {
+        bpmProcessService.clearProcesses();
+    }
+
 
     @GetMapping("/deploy")
     public void deploy() {

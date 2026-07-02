@@ -21,9 +21,9 @@ import java.util.stream.IntStream;
 @Slf4j
 public class BpmnProcessCreationService {
 
-    private static final String PROCESS_DEFINITION_KEY = "product_processing_wait_rv";
+    private static final String PROCESS_DEFINITION_KEY = "product_processing_wait_rv2";
 
-    private static final String PROCESS_DEFINITION_PATH = "processes/product_processing.with.wait.bpmn20.xml";
+    private static final String PROCESS_DEFINITION_PATH = "processes/" + PROCESS_DEFINITION_KEY + ".bpmn";
 
     private static final String PROCESS_NAME = "Product Processing Deployment With Wait";
 
@@ -41,9 +41,7 @@ public class BpmnProcessCreationService {
 
     public void fillProcessTable(int processCount) {
         deployProcess(false);
-        if (bpmProcessService.count() == 0) {
-            transactionalService.execute(() -> bpmProcessService.fillProcessTable(processCount));
-        }
+        transactionalService.execute(() -> bpmProcessService.fillProcessTable(processCount));
     }
 
 

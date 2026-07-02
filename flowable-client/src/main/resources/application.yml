@@ -73,6 +73,7 @@ flowable:
     async:
       executor:
         global-acquire-lock-enabled: true
+        max-async-jobs-due-per-acquisition: 100
 
 
 
@@ -89,7 +90,9 @@ server:
 
 logging:
   level:
-    org.flowable.engine: INFO
+    org.flowable: INFO
+    org.flowable.engine.impl.persistence.entity: INFO
+    org.flowable.task.service.impl.persistence.entity: INFO
 
 springdoc:
   swagger-ui:

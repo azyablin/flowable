@@ -1,5 +1,5 @@
 rootProject.name = 'flowable'
 include 'flowable-client'
 include 'flowable-test'
-include 'flowable-testclient'
+
 

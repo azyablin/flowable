@@ -43,7 +43,7 @@ flowable:
   # Основная конфигурация
   async-executor-activate: true
   database-schema-update: true
-  history-level: none
+  history-level: audit
   cmmn:
     enabled: false
   dmn:
@@ -52,6 +52,8 @@ flowable:
     async:
       executor:
         global-acquire-lock-enabled: true
+        max-async-jobs-due-per-acquisition: 100
+
 
 
 
@@ -68,7 +70,9 @@ server:
 
 logging:
   level:
-    org.flowable.engine: INFO
+    org.flowable: DEBUG
+    org.flowable.engine.impl.persistence.entity: DEBUG
+    org.flowable.task.service.impl.persistence.entity: DEBUG
 
 springdoc:
   swagger-ui:
