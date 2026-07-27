@@ -4,7 +4,7 @@
     <persistence-units>
       <persistence-unit moduleName="flowable.flowable-client.main" name="Default">
         <packages>
-          <package value="com.tander.flowable.client" />
+          <package value="com.tander.flowable.client.model" />
         </packages>
       </persistence-unit>
       <persistence-unit moduleName="flowable.flowable-testclient.main" name="Default">

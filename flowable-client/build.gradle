@@ -6,6 +6,11 @@ plugins {
     id 'io.freefair.lombok' version '6.6.1'
 }
 
+
+ext {
+    flowableVersion = '8.0.0'
+}
+
 group = 'com.example'
 version = '1.0.0'
 sourceCompatibility = '17'
@@ -14,10 +19,6 @@ repositories {
     mavenLocal()
     mavenCentral()
 
-}
-
-ext {
-    flowableVersion = '7.2.0'
 }
 
 
