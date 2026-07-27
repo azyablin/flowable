@@ -34,6 +34,11 @@ flowable:
   async-executor-activate: true
   database-schema-update: true
   history-level: audit
+  process:
+    async:
+      executor:
+        global-acquire-lock-enabled: true
+        max-async-jobs-due-per-acquisition: 100
 
 
 

@@ -89,7 +89,12 @@ server:
 
 logging:
   level:
-    org.flowable.engine: INFO
+    org.flowable: INFO
+    org.flowable.engine.impl.persistence.entity: INFO
+    org.flowable.task.service.impl.persistence.entity: INFO
+  file:
+    name: log/flowable.log
+
 
 springdoc:
   swagger-ui:

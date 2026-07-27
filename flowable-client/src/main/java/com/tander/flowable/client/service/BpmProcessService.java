@@ -3,6 +3,7 @@ package com.tander.flowable.client.service;
 import com.tander.flowable.client.model.BpmExecution;
 import com.tander.flowable.client.model.BpmExecutionInfo;
 import com.tander.flowable.client.model.BpmProcess;
+import com.tander.flowable.client.repository.BpmExecutionRepository;
 import com.tander.flowable.client.repository.BpmProcessRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +24,15 @@ public class BpmProcessService {
 
     private final BpmProcessRepository bpmProcessRepository;
 
+    private final BpmExecutionRepository bpmExecutionRepository;
+
     @Transactional
     public void fillProcessTable(int processCount) {
-        bpmProcessRepository.lockProperty("common.schema.version")
-            .ifPresent(s -> {
-                var processes = IntStream.range(0, processCount)
-                    .boxed()
-                    .map(integer -> new BpmProcess())
-                    .toList();
-                bpmProcessRepository.saveAll(processes);
-            });
+        var processes = IntStream.range(0, processCount)
+            .boxed()
+            .map(integer -> new BpmProcess())
+            .toList();
+        bpmProcessRepository.saveAll(processes);
     }
 
     @Transactional
@@ -65,5 +65,11 @@ public class BpmProcessService {
     }
 
 
+    @Transactional
+    public void clearProcesses() {
+        bpmProcessRepository.deleteAll();
+        bpmExecutionRepository.deleteAll();
+
+    }
 
 }
