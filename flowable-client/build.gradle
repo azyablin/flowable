@@ -17,7 +17,7 @@ repositories {
 }
 
 ext {
-    flowableVersion = '7.2.0'
+    flowableVersion = '8.0.0'
 }
 
 

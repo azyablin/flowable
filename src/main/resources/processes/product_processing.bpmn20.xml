@@ -8,7 +8,7 @@
         <flowable:formProperty id="products" name="Список товаров" type="json"></flowable:formProperty>
       </extensionElements>
     </startEvent>
-    <subProcess id="processProductSubprocess" name="subProcess" flowable:async="false" flowable:exclusive="false">
+    <subProcess id="processProductSubprocess" name="subProcess" flowable:async="true" flowable:exclusive="false">
       <multiInstanceLoopCharacteristics isSequential="false" flowable:collection="products" flowable:elementVariable="product">
         <extensionElements></extensionElements>
         <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>
