@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class BpmnProcessCreationService {
 
-    private static final String PROCESS_DEFINITION_KEY = "product_processing_wait_rv2";
+    private static final String PROCESS_DEFINITION_KEY = "product_processing_wait_rv";
 
     private static final String PROCESS_DEFINITION_PATH = "processes/" + PROCESS_DEFINITION_KEY + ".bpmn";
 
