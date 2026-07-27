@@ -26,16 +26,6 @@ public class FlowableConfig {
     @Autowired
     private FlowableErrorEventListener errorListener;
 
-
-    @Bean
-    @ProcessAsync
-    @Primary
-    public AsyncJobExecutorConfiguration customProcessAsyncExecutorConfiguration() {
-        var config = new AsyncJobExecutorConfiguration();
-        config.setGlobalAcquireLockEnabled(true);
-        return config;
-    }
-
     @Bean
     public EngineConfigurationConfigurer<SpringProcessEngineConfiguration>
     springProcessEngineConfigurer(@ProcessAsync SpringAsyncExecutor springAsyncExecutor) {
@@ -43,8 +33,6 @@ public class FlowableConfig {
             configurer.setAsyncExecutorActivate(true);
             configurer.setAsyncExecutorNumberOfRetries(3);
             configurer.setAsyncExecutorSecondsToWaitOnShutdown(30);
-            springAsyncExecutor.getConfiguration().setGlobalAcquireLockPrefix("flowable-lock");
-            JobServiceConfiguration jobservConfig = configurer.getJobServiceConfiguration();
         };
     }
 
