@@ -76,6 +76,10 @@ flowable:
 
 
 
+app:
+  job:
+    interceptor:
+      enabled: true
 
 
 

@@ -8,6 +8,7 @@ import org.flowable.common.engine.impl.interceptor.CommandContext;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
+import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityManager;
 import org.flowable.engine.impl.util.CommandContextUtil;
 import org.flowable.engine.runtime.Execution;
@@ -39,6 +40,49 @@ public class AsyncResponseService {
         COUNTER.set(0);
     }
 
+
+    //@Async("taskExecutorBpmn")
+    public void sendMessage(String messageName, String executionId) {
+        runtimeService.messageEventReceived(messageName, executionId);
+    }
+
+    @Async("taskExecutorBpmn")
+    public void sendMessageAsinc(String messageName, String executionId) {
+        for (int i = 0; i < 10; ++i) {
+            var execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
+            if (execution != null) {
+                ExecutionEntityImpl e = (ExecutionEntityImpl) execution;
+                System.out.println(e.getStartTime());
+                runtimeService.messageEventReceived(messageName, executionId);
+                break;
+            } else {
+                log.info("execution not found");
+            }
+
+        }
+    }
+
+    @Async("taskExecutorBpmn")
+    @Transactional
+    public void sendMessageByProcess(String messageName, String processInstanceId) {
+
+        for (int i = 0; i < 10; ++i) {
+            var list = runtimeService.createEventSubscriptionQuery()
+                .eventType("message")
+                .eventName(messageName)
+                .processInstanceId(processInstanceId)
+                .list();
+            if (!list.isEmpty()) {
+                var executionId = list.get(0).getExecutionId();
+                log.info("message received");
+                runtimeService.messageEventReceived(messageName, executionId);
+                return;
+            } else {
+                log.info("list is empty");
+            }
+        }
+        throw new RuntimeException("message not received");
+    }
 
 
 
@@ -94,6 +138,7 @@ public class AsyncResponseService {
     }
 
     private void internalSendSignal(String executionId) {
+
         runtimeService.trigger(executionId);
     }
 

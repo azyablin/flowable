@@ -15,6 +15,7 @@ public class ProcessAction implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) {
+        System.out.println("ProcessAction run");
     //    bpmExecutionService.addExecution(execution.getId());
     }
 }
