@@ -33,7 +33,7 @@ public class FlowableConfig {
             configurer.setAsyncExecutorActivate(true);
             configurer.setAsyncExecutorNumberOfRetries(3);
             configurer.setAsyncExecutorSecondsToWaitOnShutdown(30);
-            configurer.setParallelMultiInstanceAsyncLeave(false);
+       //     configurer.setParallelMultiInstanceAsyncLeave(false);
             //parallelMultiInstanceAsyncLeave
         };
     }
@@ -44,8 +44,8 @@ public class FlowableConfig {
                                                                                                  JobAfterUpdateInterceptor jobAfterUpdateInterceptor
     ) {
         return configurer -> {
-            configurer.setCustomMybatisInterceptors(List.of(jobAfterUpdateInterceptor, mybatisPlusInterceptor));
-            configurer.setCustomMybatisMappers(Set.of(JobMapper.class));
+          //  configurer.setCustomMybatisInterceptors(List.of(jobAfterUpdateInterceptor, mybatisPlusInterceptor));
+           // configurer.setCustomMybatisMappers(Set.of(JobMapper.class));
 
 
         };

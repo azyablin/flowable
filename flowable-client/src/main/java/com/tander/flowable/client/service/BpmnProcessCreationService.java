@@ -30,6 +30,10 @@ public class BpmnProcessCreationService {
 
     private static final String PROCESS_DEFINITION_PATH = "processes/" + PROCESS_DEFINITION_KEY + ".bpmn";
 
+    private static final String SUB_PROCESS_DEFINITION_KEY = "product_sub_process";
+
+    private static final String SUB_PROCESS_DEFINITION_PATH = "processes/" + PROCESS_DEFINITION_KEY + ".bpmn";
+
     private static final String PROCESS_NAME = "Product Processing Deployment With Wait";
 
     private static final String SUB_PROCESS_NAME_ = "Product Processing Deployment With Wait sub";
@@ -67,7 +71,8 @@ public class BpmnProcessCreationService {
                 new Product().setCode(idx.toString()).setId(idx).setName("pr_" + idx).setUpdateThreadId(threadId)
             )
             .toList();
-        return productRepository.saveAll(products);
+        return products;
+        //return productRepository.saveAll(products);
 
     }
 
@@ -85,12 +90,12 @@ public class BpmnProcessCreationService {
         );
         bpmProcess.setProcessId(processInstance.getProcessInstanceId());
         bpmProcessService.save(bpmProcess);
-        var executionId =  runtimeService.createEventSubscriptionQuery()
+     /*   var executionId =  runtimeService.createEventSubscriptionQuery()
             .eventType("message")
             .eventName("event_sub_process")
             .processInstanceId(processInstance.getProcessInstanceId())
             .list().get(0).getExecutionId();
-        products.forEach(product -> asyncResponseService.sendMessageAsinc("event_sub_process", executionId));
+        products.forEach(product -> asyncResponseService.sendMessageAsinc("event_sub_process", executionId));*/
 
      //
         log.info("Процесс успешно запущен: {}, thread id: {}, порт: {}",
@@ -101,6 +106,10 @@ public class BpmnProcessCreationService {
         if (ignoreExisting) {
             repositoryService.createDeployment()
                 .addClasspathResource(PROCESS_DEFINITION_PATH)
+                .name(PROCESS_NAME)
+                .deploy();
+            repositoryService.createDeployment()
+                .addClasspathResource(SUB_PROCESS_DEFINITION_PATH)
                 .name(PROCESS_NAME)
                 .deploy();
 

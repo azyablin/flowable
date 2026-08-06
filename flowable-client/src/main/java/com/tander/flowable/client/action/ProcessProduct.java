@@ -1,13 +1,10 @@
 package com.tander.flowable.client.action;
 
-import com.tander.flowable.client.model.Product;
 import com.tander.flowable.client.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
-
-import static com.tander.flowable.client.model.Product.VAR_NAME;
 
 @Component("processProduct")
 @RequiredArgsConstructor
