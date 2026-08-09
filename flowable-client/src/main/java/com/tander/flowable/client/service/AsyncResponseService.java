@@ -46,6 +46,10 @@ public class AsyncResponseService {
         runtimeService.messageEventReceived(messageName, executionId);
     }
 
+    public void sendMessage(String messageName, String executionId, Map<String, Object> processVariables) {
+        runtimeService.messageEventReceived(messageName, executionId, processVariables);
+    }
+
     @Async("taskExecutorBpmn")
     public void sendMessageAsinc(String messageName, String executionId) {
         for (int i = 0; i < 10; ++i) {

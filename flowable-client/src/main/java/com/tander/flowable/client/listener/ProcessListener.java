@@ -25,7 +25,7 @@ public class ProcessListener implements ExecutionListener {
     @SneakyThrows
     @Override
     public void notify(DelegateExecution execution) {
-        bpmExecutionService.addExecution(execution.getId());
+      //  bpmExecutionService.addExecution(execution.getId());
         log.info("process instance created");
     }
 }

@@ -2,6 +2,7 @@ package com.tander.flowable.client.config;
 
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.tander.flowable.client.FlowableErrorEventListener;
+import com.tander.flowable.client.listener.MyProcessStartedListener;
 import com.tander.flowable.client.mybatis.interceptor.JobAfterUpdateInterceptor;
 import com.tander.flowable.client.mybatis.mapper.JobMapper;
 import org.flowable.app.spring.SpringAppEngineConfiguration;
@@ -33,6 +34,8 @@ public class FlowableConfig {
             configurer.setAsyncExecutorActivate(true);
             configurer.setAsyncExecutorNumberOfRetries(3);
             configurer.setAsyncExecutorSecondsToWaitOnShutdown(30);
+
+
        //     configurer.setParallelMultiInstanceAsyncLeave(false);
             //parallelMultiInstanceAsyncLeave
         };
@@ -44,6 +47,7 @@ public class FlowableConfig {
                                                                                                  JobAfterUpdateInterceptor jobAfterUpdateInterceptor
     ) {
         return configurer -> {
+
           //  configurer.setCustomMybatisInterceptors(List.of(jobAfterUpdateInterceptor, mybatisPlusInterceptor));
            // configurer.setCustomMybatisMappers(Set.of(JobMapper.class));
 

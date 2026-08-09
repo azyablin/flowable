@@ -90,12 +90,14 @@ public class BpmnProcessCreationService {
         );
         bpmProcess.setProcessId(processInstance.getProcessInstanceId());
         bpmProcessService.save(bpmProcess);
-     /*   var executionId =  runtimeService.createEventSubscriptionQuery()
-            .eventType("message")
-            .eventName("event_sub_process")
-            .processInstanceId(processInstance.getProcessInstanceId())
-            .list().get(0).getExecutionId();
-        products.forEach(product -> asyncResponseService.sendMessageAsinc("event_sub_process", executionId));*/
+        products.forEach(product -> {
+            var executionId =  runtimeService.createEventSubscriptionQuery()
+                .eventType("message")
+                .eventName("event_sub_process")
+                .processInstanceId(processInstance.getProcessInstanceId())
+                .list().get(0).getExecutionId();
+            asyncResponseService.sendMessage("event_sub_process", executionId);
+        });
 
      //
         log.info("Процесс успешно запущен: {}, thread id: {}, порт: {}",
