@@ -6,12 +6,15 @@ import com.tander.flowable.client.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.flowable.common.engine.api.FlowableObjectNotFoundException;
+import org.flowable.common.engine.api.FlowableOptimisticLockingException;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.eventsubscription.api.EventSubscription;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +35,11 @@ public class BpmnProcessCreationService {
 
     private static final String SUB_PROCESS_DEFINITION_KEY = "product_sub_process";
 
-    private static final String SUB_PROCESS_DEFINITION_PATH = "processes/" + PROCESS_DEFINITION_KEY + ".bpmn";
+    private static final String SUB_PROCESS_DEFINITION_PATH = "processes/" + SUB_PROCESS_DEFINITION_KEY + ".bpmn";
+
+    private static final String FREE_PROCESS_DEFINITION_KEY = "process_product";
+
+    private static final String FREE_PROCESS_DEFINITION_PATH = "processes/" + FREE_PROCESS_DEFINITION_KEY + ".bpmn";
 
     private static final String PROCESS_NAME = "Product Processing Deployment With Wait";
 
@@ -51,8 +58,13 @@ public class BpmnProcessCreationService {
 
     private final ProductRepository productRepository;
 
+
+
     @Value("${server.port}")
     private String serverPort;
+
+    @Value("${spring.output.ansi.enabled:detect}")
+    private AnsiOutput.Enabled springOutputAnsiEnabled;
 
     public void fillProcessTable(int processCount) {
         deployProcess(false);
@@ -90,14 +102,14 @@ public class BpmnProcessCreationService {
         );
         bpmProcess.setProcessId(processInstance.getProcessInstanceId());
         bpmProcessService.save(bpmProcess);
-        products.forEach(product -> {
+     /*   products.forEach(product -> {
             var executionId =  runtimeService.createEventSubscriptionQuery()
                 .eventType("message")
                 .eventName("event_sub_process")
                 .processInstanceId(processInstance.getProcessInstanceId())
                 .list().get(0).getExecutionId();
             asyncResponseService.sendMessage("event_sub_process", executionId);
-        });
+        });*/
 
      //
         log.info("Процесс успешно запущен: {}, thread id: {}, порт: {}",
@@ -105,6 +117,8 @@ public class BpmnProcessCreationService {
     }
 
     public void deployProcess(boolean ignoreExisting) {
+
+
         if (ignoreExisting) {
             repositoryService.createDeployment()
                 .addClasspathResource(PROCESS_DEFINITION_PATH)
@@ -114,6 +128,12 @@ public class BpmnProcessCreationService {
                 .addClasspathResource(SUB_PROCESS_DEFINITION_PATH)
                 .name(PROCESS_NAME)
                 .deploy();
+
+            repositoryService.createDeployment()
+                .addClasspathResource(FREE_PROCESS_DEFINITION_PATH)
+                .name(PROCESS_NAME)
+                .deploy();
+
 
         }
     }

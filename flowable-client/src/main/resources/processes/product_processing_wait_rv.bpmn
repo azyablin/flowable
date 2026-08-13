@@ -6,41 +6,15 @@
     <extensionElements>
       <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
       <design:creationdate><![CDATA[2026-07-28T12:59:01.473Z]]></design:creationdate>
-      <design:modificationdate><![CDATA[2026-08-06T22:32:35.704Z]]></design:modificationdate>
+      <design:modificationdate><![CDATA[2026-08-13T22:27:20.990Z]]></design:modificationdate>
     </extensionElements>
-    <subProcess id="EventSubprocess_10" name="Event-subprocess" triggeredByEvent="true">
+    <callActivity id="CallActivity_17" name="Call activity" calledElement="product_sub_process" flowable:sameDeployment="true" flowable:fallbackToDefaultTenant="true">
       <extensionElements>
-        <design:stencilid><![CDATA[EventSubprocess]]></design:stencilid>
+        <flowable:in sourceExpression="${products}" target="collection"></flowable:in>
+        <flowable:in sourceExpression="process_product" target="processDefinitionKey"></flowable:in>
+        <design:stencilid><![CDATA[CallActivity]]></design:stencilid>
       </extensionElements>
-      <callActivity id="CallActivity_17" name="Call activity" calledElement="product_sub_process" flowable:sameDeployment="true" flowable:fallbackToDefaultTenant="true">
-        <extensionElements>
-          <design:stencilid><![CDATA[CallActivity]]></design:stencilid>
-        </extensionElements>
-      </callActivity>
-      <startEvent id="StartMessageEvent_12" isInterrupting="false">
-        <extensionElements>
-          <flowable:executionListener event="start" delegateExpression="${mySubProcessStartListener}"></flowable:executionListener>
-          <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
-          <design:stencilid><![CDATA[StartMessageEvent]]></design:stencilid>
-        </extensionElements>
-        <messageEventDefinition messageRef="event_sub_process"></messageEventDefinition>
-      </startEvent>
-      <endEvent id="EndNoneEvent_16">
-        <extensionElements>
-          <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
-        </extensionElements>
-      </endEvent>
-      <sequenceFlow id="SequenceFlow_18" sourceRef="CallActivity_17" targetRef="EndNoneEvent_16">
-        <extensionElements>
-          <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-        </extensionElements>
-      </sequenceFlow>
-      <sequenceFlow id="SequenceFlow_16" sourceRef="StartMessageEvent_12" targetRef="CallActivity_17">
-        <extensionElements>
-          <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-        </extensionElements>
-      </sequenceFlow>
-    </subProcess>
+    </callActivity>
     <receiveTask id="waitForResponse" name="Wait for Async Response">
       <extensionElements>
         <flowable:executionListener event="start" delegateExpression="${processListener}"></flowable:executionListener>
@@ -61,12 +35,17 @@
         <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
       </extensionElements>
     </endEvent>
+    <sequenceFlow id="SequenceFlow_17" sourceRef="CallActivity_17" targetRef="waitForResponse">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_1" sourceRef="waitForResponse" targetRef="end">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_14" sourceRef="start" targetRef="waitForResponse">
+    <sequenceFlow id="SequenceFlow_14" sourceRef="start" targetRef="CallActivity_17">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
@@ -74,48 +53,29 @@
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_product_processing_wait_rv">
     <bpmndi:BPMNPlane bpmnElement="product_processing_wait_rv" id="BPMNPlane_product_processing_wait_rv">
-      <bpmndi:BPMNShape bpmnElement="EventSubprocess_10" id="BPMNShape_EventSubprocess_10">
-        <omgdc:Bounds height="217.0" width="865.0" x="546.5" y="-463.50000974535897"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="CallActivity_17" id="BPMNShape_CallActivity_17">
-        <omgdc:Bounds height="80.0" width="100.0" x="893.0" y="-395.00000974535897"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="StartMessageEvent_12" id="BPMNShape_StartMessageEvent_12">
-        <omgdc:Bounds height="30.0" width="30.0" x="592.0" y="-363.50000974535897"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="EndNoneEvent_16" id="BPMNShape_EndNoneEvent_16">
-        <omgdc:Bounds height="28.0" width="28.0" x="1256.0" y="-366.50000974535897"></omgdc:Bounds>
+        <omgdc:Bounds height="78.0" width="252.0" x="765.0" y="151.999990254641"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="waitForResponse" id="BPMNShape_waitForResponse">
         <omgdc:Bounds height="40.0" width="50.0" x="1171.9999848008156" y="170.999990254641"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
-        <omgdc:Bounds height="30.0" width="30.0" x="232.0" y="177.999990254641"></omgdc:Bounds>
+        <omgdc:Bounds height="30.0" width="30.0" x="291.1129460939055" y="175.999990254641"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
-        <omgdc:Bounds height="28.0" width="28.0" x="1386.999972730876" y="176.999990254641"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="1419.999972730876" y="176.999990254641"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_16" id="BPMNEdge_SequenceFlow_16" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
-        <omgdi:waypoint x="622.0" y="-348.50000974535897"></omgdi:waypoint>
-        <omgdi:waypoint x="757.5" y="-348.50000974535897"></omgdi:waypoint>
-        <omgdi:waypoint x="757.5" y="-335.00000974535897"></omgdi:waypoint>
-        <omgdi:waypoint x="893.0" y="-335.00000974535897"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_17" id="BPMNEdge_SequenceFlow_17" flowable:sourceDockerX="126.0" flowable:sourceDockerY="39.0" flowable:targetDockerX="25.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="1017.0" y="190.999990254641"></omgdi:waypoint>
+        <omgdi:waypoint x="1171.9999848008156" y="190.999990254641"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_18" id="BPMNEdge_SequenceFlow_18" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
-        <omgdi:waypoint x="993.0" y="-355.00000974535897"></omgdi:waypoint>
-        <omgdi:waypoint x="1124.5" y="-355.00000974535897"></omgdi:waypoint>
-        <omgdi:waypoint x="1124.5" y="-352.50000974535897"></omgdi:waypoint>
-        <omgdi:waypoint x="1256.0" y="-352.50000974535897"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_14" id="BPMNEdge_SequenceFlow_14" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="25.0" flowable:targetDockerY="20.0">
-        <omgdi:waypoint x="262.0" y="192.999990254641"></omgdi:waypoint>
-        <omgdi:waypoint x="717.4999924004078" y="192.999990254641"></omgdi:waypoint>
-        <omgdi:waypoint x="717.4999924004078" y="200.999990254641"></omgdi:waypoint>
-        <omgdi:waypoint x="1171.9999848008156" y="200.999990254641"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_14" id="BPMNEdge_SequenceFlow_14" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="126.0" flowable:targetDockerY="39.0">
+        <omgdi:waypoint x="321.1129460939055" y="190.999990254641"></omgdi:waypoint>
+        <omgdi:waypoint x="765.0" y="190.99999025464098"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1" id="BPMNEdge_SequenceFlow_1" flowable:sourceDockerX="25.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
         <omgdi:waypoint x="1221.9999848008156" y="190.999990254641"></omgdi:waypoint>
-        <omgdi:waypoint x="1386.999972730876" y="190.999990254641"></omgdi:waypoint>
+        <omgdi:waypoint x="1419.999972730876" y="190.999990254641"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

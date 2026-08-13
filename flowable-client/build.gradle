@@ -34,6 +34,10 @@ dependencies {
     implementation "org.flowable:flowable-engine:${flowableVersion}"
     implementation "org.flowable:flowable-spring-boot-starter:${flowableVersion}"
 
+    implementation 'org.codehaus.groovy:groovy-jsr223:3.0.22'
+
+
+
     implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0') {
         exclude group: "io.swagger.core.v3", module: "swagger-annotations"
     }

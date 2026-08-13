@@ -1,36 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Design" exporterVersion="2025.2.04" design:palette="flowable-work-process-palette">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Design" exporterVersion="2026.1.1" design:palette="flowable-work-process-palette">
+  <message id="complete_process_message" name="complete_process_message"></message>
   <process id="product_sub_process" name="product_sub_process" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
     <extensionElements>
+      <flowable:interface-input-parameter name="collection" displayName="MI collection" type="array" required="true" description="Коллекция для создания группы процессов"></flowable:interface-input-parameter>
+      <flowable:interface-input-parameter name="processDefinitionKey" displayName="Process definition key for creation" type="string" required="true" description="DefinitionKey создаваемого процесса"></flowable:interface-input-parameter>
+      <flowable:interface-input-parameter name="inputItemVarNameForProcess" displayName="Name of the input variable for new process" type="string" description="Имя переменной в, которую передаётся элемент коллекции MI "></flowable:interface-input-parameter>
+      <flowable:interface-input-parameter name="businessKey" displayName="Business key" type="string" description="business key для всех создаваемых процессов"></flowable:interface-input-parameter>
       <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
       <design:creationdate><![CDATA[2026-07-29T14:05:54.346Z]]></design:creationdate>
-      <design:modificationdate><![CDATA[2026-07-29T14:29:31.861Z]]></design:modificationdate>
+      <design:modificationdate><![CDATA[2026-08-13T20:01:55.088Z]]></design:modificationdate>
     </extensionElements>
-    <receiveTask id="waitForResponse" name="Wait for Async Response">
+    <serviceTask id="ServiceTask_4" name="init" flowable:delegateExpression="${initMultipleProcessDelegate}">
       <extensionElements>
-        <flowable:executionListener event="start" delegateExpression="${subProcessListener}"></flowable:executionListener>
-        <flowable:executionListener event="end" delegateExpression="${afterSudProcessListener}"></flowable:executionListener>
-        <design:stencilid><![CDATA[ReceiveTask]]></design:stencilid>
+        <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
-    </receiveTask>
+    </serviceTask>
+    <serviceTask id="ServiceTask_5" name="run processes" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${runMultipleProcessDelegate}">
+      <extensionElements>
+        <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="true" flowable:collection="collection" flowable:elementVariable="item">
+        <extensionElements></extensionElements>
+      </multiInstanceLoopCharacteristics>
+    </serviceTask>
     <startEvent id="startnoneevent1" flowable:initiator="initiator" flowable:formFieldValidation="false">
       <extensionElements>
         <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
         <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
       </extensionElements>
     </startEvent>
-    <endEvent id="EndNoneEvent_2">
+    <intermediateCatchEvent id="IntermediateMessageEventCatching_4">
+      <extensionElements>
+        <design:stencilid><![CDATA[IntermediateMessageEventCatching]]></design:stencilid>
+      </extensionElements>
+      <messageEventDefinition messageRef="complete_process_message"></messageEventDefinition>
+    </intermediateCatchEvent>
+    <endEvent id="EndNoneEvent_2" flowable:async="true" flowable:exclusive="false">
       <extensionElements>
         <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
       </extensionElements>
     </endEvent>
-    <sequenceFlow id="SequenceFlow_4" sourceRef="waitForResponse" targetRef="EndNoneEvent_2">
+    <sequenceFlow id="SequenceFlow_8" sourceRef="ServiceTask_4" targetRef="ServiceTask_5">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_3" sourceRef="startnoneevent1" targetRef="waitForResponse">
+    <sequenceFlow id="SequenceFlow_9" sourceRef="ServiceTask_5" targetRef="IntermediateMessageEventCatching_4">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_6" sourceRef="startnoneevent1" targetRef="ServiceTask_4">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_4" sourceRef="IntermediateMessageEventCatching_4" targetRef="EndNoneEvent_2">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
@@ -38,22 +66,36 @@
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_product_sub_process">
     <bpmndi:BPMNPlane bpmnElement="product_sub_process" id="BPMNPlane_product_sub_process">
-      <bpmndi:BPMNShape bpmnElement="waitForResponse" id="BPMNShape_waitForResponse">
-        <omgdc:Bounds height="40.0" width="50.0" x="556.9999848008156" y="256.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="ServiceTask_4" id="BPMNShape_ServiceTask_4">
+        <omgdc:Bounds height="80.0" width="100.0" x="366.5761856666426" y="236.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ServiceTask_5" id="BPMNShape_ServiceTask_5">
+        <omgdc:Bounds height="80.0" width="100.0" x="653.5761856666426" y="236.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="startnoneevent1" id="BPMNShape_startnoneevent1">
-        <omgdc:Bounds height="30.0" width="30.0" x="320.0" y="261.0"></omgdc:Bounds>
+        <omgdc:Bounds height="30.0" width="30.0" x="158.57618566664257" y="261.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IntermediateMessageEventCatching_4" id="BPMNShape_IntermediateMessageEventCatching_4">
+        <omgdc:Bounds height="30.0" width="30.0" x="888.9174211142687" y="261.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="EndNoneEvent_2" id="BPMNShape_EndNoneEvent_2">
-        <omgdc:Bounds height="28.0" width="28.0" x="765.0" y="262.0"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="1084.5157165665103" y="262.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_4" id="BPMNEdge_SequenceFlow_4" flowable:sourceDockerX="25.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
-        <omgdi:waypoint x="606.9999848008156" y="276.0"></omgdi:waypoint>
-        <omgdi:waypoint x="765.0" y="276.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_8" id="BPMNEdge_SequenceFlow_8" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="466.5761856666426" y="276.0"></omgdi:waypoint>
+        <omgdi:waypoint x="653.5761856666426" y="276.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_3" id="BPMNEdge_SequenceFlow_3" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="25.0" flowable:targetDockerY="20.0">
-        <omgdi:waypoint x="350.0" y="276.0"></omgdi:waypoint>
-        <omgdi:waypoint x="556.9999848008156" y="276.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_9" id="BPMNEdge_SequenceFlow_9" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="753.5761856666426" y="276.0"></omgdi:waypoint>
+        <omgdi:waypoint x="888.9174211142687" y="276.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_6" id="BPMNEdge_SequenceFlow_6" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="188.57618566664257" y="276.0"></omgdi:waypoint>
+        <omgdi:waypoint x="366.5761856666426" y="276.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_4" id="BPMNEdge_SequenceFlow_4" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="918.9174211142687" y="276.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1084.5157165665103" y="276.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

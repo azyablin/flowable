@@ -23,6 +23,7 @@ public class AfterProcessListener implements ExecutionListener {
 
     @Override
     public void notify(DelegateExecution execution) {
+
         AsyncResponseService.AFTER_EXECUTIONS.put(execution.getId(), "t");
         log.info("process event exit");
         if (!AsyncResponseService.EXECUTIONS.containsKey(execution.getId())) {
