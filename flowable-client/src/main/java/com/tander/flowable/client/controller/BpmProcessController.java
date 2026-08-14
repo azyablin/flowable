@@ -9,6 +9,7 @@ import com.tander.flowable.client.service.StarterService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.flowable.engine.RuntimeService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +33,8 @@ public class BpmProcessController {
     private final BpmProcessService bpmProcessService;
 
     private final AsyncResponseService asyncResponseService;
+
+    private final RuntimeService runtimeService;
 
     @Operation
     @GetMapping("/start")
@@ -62,7 +65,8 @@ public class BpmProcessController {
         Runnable runnable = () -> {
             System.out.println("******send message*****");
             try {
-                asyncResponseService.sendMessage(messageName, executionId);
+                runtimeService.trigger(executionId);
+             //   asyncResponseService.sendMessage(messageName, executionId);
             } catch (Exception e) {
                 log.info("************* {} *********", e);
                 return;

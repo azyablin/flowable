@@ -1,13 +1,10 @@
-package com.tander.flowable.client.delegate;
+package com.tander.flowable.client.delegate.mi;
 
 import lombok.RequiredArgsConstructor;
-import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -16,6 +13,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.tander.flowable.client.constant.MiConstant.BUSINESS_KEY_VARIABLE_NAME;
+import static com.tander.flowable.client.constant.MiConstant.PARENT_ID_VARIABLE_NAME;
+
 
 @Component("runMultipleProcessDelegate")
 @RequiredArgsConstructor
@@ -43,14 +44,14 @@ public class RunMultipleProcessDelegate implements JavaDelegate {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         variables.putAll(Map.of(
             inputItemVarNameForProcessStr, execution.getVariable("item"),
-            "parent_id", execution.getProcessInstanceId()
+            PARENT_ID_VARIABLE_NAME, execution.getProcessInstanceId()
         ));
 
         runtimeService
             .createProcessInstanceBuilder()
             .processDefinitionKey(execution.getVariable("processDefinitionKey").toString())
             .variables(variables)
-            .businessKey(execution.getProcessInstanceBusinessKey())
+            .businessKey(execution.getVariable(BUSINESS_KEY_VARIABLE_NAME, String.class))
             .startAsync();
     }
 

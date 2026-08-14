@@ -6,12 +6,13 @@
     <extensionElements>
       <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
       <design:creationdate><![CDATA[2026-07-28T12:59:01.473Z]]></design:creationdate>
-      <design:modificationdate><![CDATA[2026-08-13T22:27:20.990Z]]></design:modificationdate>
+      <design:modificationdate><![CDATA[2026-08-14T07:48:59.302Z]]></design:modificationdate>
     </extensionElements>
-    <callActivity id="CallActivity_17" name="Call activity" calledElement="product_sub_process" flowable:sameDeployment="true" flowable:fallbackToDefaultTenant="true">
+    <callActivity id="CallActivity_17" name="Call activity" calledElement="mi_sub_process" flowable:sameDeployment="true" flowable:fallbackToDefaultTenant="true">
       <extensionElements>
         <flowable:in sourceExpression="${products}" target="collection"></flowable:in>
         <flowable:in sourceExpression="process_product" target="processDefinitionKey"></flowable:in>
+        <flowable:in sourceExpression="initProductItemDelegate" target="delegate"></flowable:in>
         <design:stencilid><![CDATA[CallActivity]]></design:stencilid>
       </extensionElements>
     </callActivity>

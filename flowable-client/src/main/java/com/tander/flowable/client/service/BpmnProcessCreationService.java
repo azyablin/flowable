@@ -33,7 +33,7 @@ public class BpmnProcessCreationService {
 
     private static final String PROCESS_DEFINITION_PATH = "processes/" + PROCESS_DEFINITION_KEY + ".bpmn";
 
-    private static final String SUB_PROCESS_DEFINITION_KEY = "product_sub_process";
+    private static final String SUB_PROCESS_DEFINITION_KEY = "mi_sub_process";
 
     private static final String SUB_PROCESS_DEFINITION_PATH = "processes/" + SUB_PROCESS_DEFINITION_KEY + ".bpmn";
 
