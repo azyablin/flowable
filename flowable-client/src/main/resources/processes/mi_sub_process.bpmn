@@ -10,7 +10,7 @@
       <flowable:interface-input-parameter name="delegate" displayName="Java delegate" type="string" description="Делегат, который вызывается до начала создания MI"></flowable:interface-input-parameter>
       <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
       <design:creationdate><![CDATA[2026-08-14T07:48:13.889Z]]></design:creationdate>
-      <design:modificationdate><![CDATA[2026-08-14T08:15:49.348Z]]></design:modificationdate>
+      <design:modificationdate><![CDATA[2026-08-14T08:19:26.855Z]]></design:modificationdate>
     </extensionElements>
     <serviceTask id="ServiceTask_4" name="init" flowable:delegateExpression="${initMultipleProcessDelegate}">
       <extensionElements>
@@ -33,7 +33,7 @@
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </receiveTask>
-    <serviceTask id="ServiceTask_6" name="Service task" flowable:async="true" flowable:exclusive="false">
+    <serviceTask id="ServiceTask_6" name="Service task" flowable:async="true" flowable:exclusive="false" flowable:expression="${null}">
       <extensionElements>
         <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
