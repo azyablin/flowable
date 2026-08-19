@@ -45,8 +45,6 @@ public class BpmnSignalService {
             if (info.size() == 0) {
                 break;
             }
-            Thread.sleep(1000L);
-            log.info("{} items left", info.itemLeft());
         }
         log.info("ОБРАБОТКА ПРОЦЕССОВ ЗАВРШЕНА {} СЕК, ПОРТ {}",
             (System.currentTimeMillis() - startTime)/1000, serverPort);
