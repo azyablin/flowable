@@ -7,9 +7,9 @@
       <flowable:candidates-type><![CDATA[all]]></flowable:candidates-type>
       <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
       <design:creationdate><![CDATA[2026-08-14T10:54:54.965Z]]></design:creationdate>
-      <design:modificationdate><![CDATA[2026-08-19T11:40:24.732Z]]></design:modificationdate>
+      <design:modificationdate><![CDATA[2026-08-21T19:18:45.859Z]]></design:modificationdate>
     </extensionElements>
-    <callActivity id="CallActivity_17" name="Call activity" calledElement="process_product" flowable:sameDeployment="true" flowable:completeAsync="true" flowable:fallbackToDefaultTenant="true">
+    <callActivity id="CallActivity_17" name="Call activity" calledElement="process_product" flowable:sameDeployment="true" flowable:fallbackToDefaultTenant="true">
       <extensionElements>
         <design:stencilid><![CDATA[CallActivity]]></design:stencilid>
       </extensionElements>

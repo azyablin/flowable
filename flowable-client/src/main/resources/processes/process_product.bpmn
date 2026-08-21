@@ -5,11 +5,19 @@
       <flowable:candidates-type><![CDATA[all]]></flowable:candidates-type>
       <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
       <design:creationdate><![CDATA[2026-08-13T13:43:48.376Z]]></design:creationdate>
-      <design:modificationdate><![CDATA[2026-08-13T22:34:13.425Z]]></design:modificationdate>
+      <design:modificationdate><![CDATA[2026-08-21T19:12:14.311Z]]></design:modificationdate>
     </extensionElements>
     <receiveTask id="ReceiveTask_1" name="Ожидание обработки товаров">
       <extensionElements>
         <design:stencilid><![CDATA[ReceiveTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </receiveTask>
+    <receiveTask id="waitForFinishReceiveEventTask" name="Ожидание завершения">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${finishSubProcess}"></flowable:executionListener>
+        <flowable:eventType></flowable:eventType>
+        <design:stencilid><![CDATA[ReceiveEventTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </receiveTask>
@@ -25,7 +33,12 @@
         <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
       </extensionElements>
     </endEvent>
-    <sequenceFlow id="SequenceFlow_3" sourceRef="ReceiveTask_1" targetRef="EndNoneEvent_1">
+    <sequenceFlow id="SequenceFlow_1" sourceRef="ReceiveTask_1" targetRef="waitForFinishReceiveEventTask">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_3" sourceRef="waitForFinishReceiveEventTask" targetRef="EndNoneEvent_1">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
@@ -41,21 +54,26 @@
       <bpmndi:BPMNShape bpmnElement="ReceiveTask_1" id="BPMNShape_ReceiveTask_1">
         <omgdc:Bounds height="80.0" width="100.0" x="527.0" y="214.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="waitForFinishReceiveEventTask" id="BPMNShape_waitForFinishReceiveEventTask">
+        <omgdc:Bounds height="80.0" width="100.0" x="746.0" y="214.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="startnoneevent1" id="BPMNShape_startnoneevent1">
-        <omgdc:Bounds height="30.0" width="30.0" x="318.0" y="261.0"></omgdc:Bounds>
+        <omgdc:Bounds height="30.0" width="30.0" x="311.0" y="239.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="EndNoneEvent_1" id="BPMNShape_EndNoneEvent_1">
-        <omgdc:Bounds height="28.0" width="28.0" x="809.0" y="240.0"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="1017.0" y="240.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_2" id="BPMNEdge_SequenceFlow_2" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
-        <omgdi:waypoint x="348.0" y="276.0"></omgdi:waypoint>
-        <omgdi:waypoint x="437.5" y="276.0"></omgdi:waypoint>
-        <omgdi:waypoint x="437.5" y="254.0"></omgdi:waypoint>
+        <omgdi:waypoint x="341.0" y="254.0"></omgdi:waypoint>
         <omgdi:waypoint x="527.0" y="254.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_3" id="BPMNEdge_SequenceFlow_3" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="846.0" y="254.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1017.0" y="254.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1" id="BPMNEdge_SequenceFlow_1" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
         <omgdi:waypoint x="627.0" y="254.0"></omgdi:waypoint>
-        <omgdi:waypoint x="809.0" y="254.0"></omgdi:waypoint>
+        <omgdi:waypoint x="746.0" y="254.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

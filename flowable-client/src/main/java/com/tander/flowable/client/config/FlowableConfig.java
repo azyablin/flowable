@@ -1,6 +1,6 @@
 package com.tander.flowable.client.config;
 
-import com.tander.flowable.client.agenda.CustomAgendaFactory;
+
 import com.tander.flowable.client.FlowableErrorEventListener;
 import org.flowable.app.spring.SpringAppEngineConfiguration;
 import org.flowable.spring.SpringProcessEngineConfiguration;
@@ -16,8 +16,7 @@ public class FlowableConfig {
     @Autowired
     private FlowableErrorEventListener errorListener;
 
-    @Autowired
-    private CustomAgendaFactory customAgendaFactory;
+
 
     @Bean
     public EngineConfigurationConfigurer<SpringProcessEngineConfiguration>
@@ -26,8 +25,6 @@ public class FlowableConfig {
             configurer.setAsyncExecutorActivate(true);
             configurer.setAsyncExecutorNumberOfRetries(3);
             configurer.setAsyncExecutorSecondsToWaitOnShutdown(30);
-
-            configurer.setAgendaFactory(customAgendaFactory);
             configurer.setParallelMultiInstanceAsyncLeave(false);
             //parallelMultiInstanceAsyncLeave
         };
