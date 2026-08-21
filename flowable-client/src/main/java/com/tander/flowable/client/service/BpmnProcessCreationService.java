@@ -3,6 +3,7 @@ package com.tander.flowable.client.service;
 import com.tander.flowable.client.model.BpmProcess;
 import com.tander.flowable.client.model.Product;
 import com.tander.flowable.client.repository.ProductRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +14,24 @@ import org.flowable.engine.RuntimeService;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.eventsubscription.api.EventSubscription;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 
@@ -58,7 +69,9 @@ public class BpmnProcessCreationService {
 
     private final ProductRepository productRepository;
 
-
+    @Autowired
+    @Qualifier("taskExecutor")
+    private ThreadPoolTaskExecutor executor;
 
     @Value("${server.port}")
     private String serverPort;
@@ -137,6 +150,7 @@ public class BpmnProcessCreationService {
 
         }
     }
+
 
 
 }

@@ -1,13 +1,10 @@
 package com.tander.flowable.client.config;
 
-import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.tander.flowable.client.agenda.CustomAgendaFactory;
 import com.tander.flowable.client.FlowableErrorEventListener;
-import com.tander.flowable.client.mybatis.interceptor.JobAfterUpdateInterceptor;
 import org.flowable.app.spring.SpringAppEngineConfiguration;
 import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.spring.boot.EngineConfigurationConfigurer;
-import org.flowable.spring.boot.process.ProcessAsync;
-import org.flowable.spring.job.service.SpringAsyncExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +16,9 @@ public class FlowableConfig {
     @Autowired
     private FlowableErrorEventListener errorListener;
 
+    @Autowired
+    private CustomAgendaFactory customAgendaFactory;
+
     @Bean
     public EngineConfigurationConfigurer<SpringProcessEngineConfiguration>
     springProcessEngineConfigurer() {
@@ -27,22 +27,19 @@ public class FlowableConfig {
             configurer.setAsyncExecutorNumberOfRetries(3);
             configurer.setAsyncExecutorSecondsToWaitOnShutdown(30);
 
-
-
-       //     configurer.setParallelMultiInstanceAsyncLeave(false);
+            configurer.setAgendaFactory(customAgendaFactory);
+            configurer.setParallelMultiInstanceAsyncLeave(false);
             //parallelMultiInstanceAsyncLeave
         };
     }
 
     @Bean
-    public EngineConfigurationConfigurer<SpringAppEngineConfiguration> springAppEngineConfigurer(@ProcessAsync SpringAsyncExecutor springAsyncExecutor,
-                                                                                                 MybatisPlusInterceptor mybatisPlusInterceptor,
-                                                                                                 JobAfterUpdateInterceptor jobAfterUpdateInterceptor
+    public EngineConfigurationConfigurer<SpringAppEngineConfiguration> springAppEngineConfigurer(
     ) {
         return configurer -> {
 
-          //  configurer.setCustomMybatisInterceptors(List.of(jobAfterUpdateInterceptor, mybatisPlusInterceptor));
-           // configurer.setCustomMybatisMappers(Set.of(JobMapper.class));
+            //  configurer.setCustomMybatisInterceptors(List.of(jobAfterUpdateInterceptor, mybatisPlusInterceptor));
+            // configurer.setCustomMybatisMappers(Set.of(JobMapper.class));
 
 
         };

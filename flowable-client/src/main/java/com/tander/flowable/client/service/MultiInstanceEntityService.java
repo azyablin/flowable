@@ -1,5 +1,6 @@
 package com.tander.flowable.client.service;
 
+import com.tander.flowable.client.util.ProcessInstanceLocker;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,28 +95,6 @@ public class MultiInstanceEntityService {
         );
 
 
-    }
-
-    public static class ProcessInstanceLocker implements AutoCloseable {
-
-        private final CommandContext commandContext;
-        private String processInstanceId;
-        private ExecutionEntityManager executionEntityManage;
-
-        public ProcessInstanceLocker(CommandContext commandContext, String processInstanceId) {
-            this.commandContext = commandContext;
-            this.executionEntityManage = CommandContextUtil.getExecutionEntityManager(commandContext);
-            this.processInstanceId = processInstanceId;
-            var date = new Date();
-            date.setTime(date.getTime() + 10000);
-            var lockOwner = "MultiInstanceEntityService.trigger";
-            executionEntityManage.updateProcessInstanceLockTime(processInstanceId, lockOwner, date);
-        }
-
-        @Override
-        public void close() throws Exception {
-            executionEntityManage.clearProcessInstanceLockTime(processInstanceId);
-        }
     }
 
 
